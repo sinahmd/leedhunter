@@ -1,0 +1,27 @@
+[
+  {
+    "source": "google",
+    "source_url": "https://example-business.com",
+    "observed_name": "شرکت نمونه",
+    "observed_domain": "example-business.com",
+    "observed_username": null,
+    "observed_phone": "021-1234-5678",
+    "observed_email": "info@example-business.com",
+    "metadata": {
+      "platform": "website",
+      "location": "تهران"
+    }
+  },
+  {
+    "source": "instagram",
+    "source_url": "https://instagram.com/example_business",
+    "observed_name": "شرکت نمونه",
+    "observed_domain": null,
+    "observed_username": "example_business",
+    "observed_phone": null,
+    "observed_email": null,
+    "metadata": {
+      "platform": "instagram"
+    }
+  }
+]

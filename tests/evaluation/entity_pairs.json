@@ -1,0 +1,275 @@
+[
+  {
+    "id": "pair_001",
+    "candidate_a": {
+      "source": "instagram",
+      "source_url": "https://instagram.com/auto_import_mazandaran",
+      "observed_name": "واردات خودرو مازندران",
+      "observed_username": "auto_import_mazandaran",
+      "observed_phone": "+98 912 123 4567",
+      "metadata": {"platform": "instagram"}
+    },
+    "candidate_b": {
+      "source": "google",
+      "source_url": "https://mazandaran-auto-import.ir",
+      "observed_name": "شرکت واردات خودرو مازندران",
+      "observed_domain": "mazandaran-auto-import.ir",
+      "observed_phone": "011-3333-4444",
+      "metadata": {"platform": "website"}
+    },
+    "label": "AMBIGUOUS",
+    "reason": "Same region and industry, but different contact info - may be related businesses"
+  },
+  {
+    "id": "pair_002",
+    "candidate_a": {
+      "source": "google",
+      "source_url": "https://mazandaran-auto-import.ir",
+      "observed_name": "شرکت واردات خودرو مازندران",
+      "observed_domain": "mazandaran-auto-import.ir",
+      "observed_email": "info@mazandaran-auto-import.ir"
+    },
+    "candidate_b": {
+      "source": "linkedin",
+      "source_url": "https://linkedin.com/company/mazandaran-auto-import",
+      "observed_name": "Mazandaran Auto Import Co.",
+      "observed_domain": "mazandaran-auto-import.ir",
+      "observed_email": "info@mazandaran-auto-import.ir"
+    },
+    "label": "SAME",
+    "reason": "Same domain and email - definite match"
+  },
+  {
+    "id": "pair_003",
+    "candidate_a": {
+      "source": "instagram",
+      "source_url": "https://instagram.com/auto_import_mazandaran",
+      "observed_name": "واردات خودرو مازندران",
+      "observed_username": "auto_import_mazandaran",
+      "observed_phone": "+98 912 123 4567"
+    },
+    "candidate_b": {
+      "source": "google",
+      "source_url": "https://mazandaran-auto-import.ir",
+      "observed_name": "شرکت واردات خودرو مازندران",
+      "observed_domain": "mazandaran-auto-import.ir",
+      "observed_phone": "+98 912 123 4567"
+    },
+    "label": "SAME",
+    "reason": "Same phone number - definite match"
+  },
+  {
+    "id": "pair_004",
+    "candidate_a": {
+      "source": "google",
+      "source_url": "https://auto-importers-mazandaran.com",
+      "observed_name": "واردکنندگان خودرو مازندران",
+      "observed_domain": "auto-importers-mazandaran.com",
+      "observed_phone": "+98 911 234 5678"
+    },
+    "candidate_b": {
+      "source": "instagram",
+      "source_url": "https://instagram.com/auto_importers_mazandaran",
+      "observed_name": "واردکنندگان خودرو مازندران",
+      "observed_username": "auto_importers_mazandaran",
+      "observed_phone": "+98 911 234 5678"
+    },
+    "label": "SAME",
+    "reason": "Same phone number and similar name - definite match"
+  },
+  {
+    "id": "pair_005",
+    "candidate_a": {
+      "source": "google",
+      "source_url": "https://mazandaran-auto-import.ir",
+      "observed_name": "شرکت واردات خودرو مازندران",
+      "observed_domain": "mazandaran-auto-import.ir"
+    },
+    "candidate_b": {
+      "source": "google",
+      "source_url": "https://mazandaran-cars.ir",
+      "observed_name": "خودرو مازندران",
+      "observed_domain": "mazandaran-cars.ir"
+    },
+    "label": "DIFFERENT",
+    "reason": "Different domains and different business names - different companies"
+  },
+  {
+    "id": "pair_006",
+    "candidate_a": {
+      "source": "google",
+      "source_url": "https://mazandaran-auto-import.ir",
+      "observed_name": "شرکت واردات خودرو مازندران",
+      "observed_domain": "mazandaran-auto-import.ir"
+    },
+    "candidate_b": {
+      "source": "google",
+      "source_url": "https://tehran-auto-import.com",
+      "observed_name": "واردات خودرو تهران",
+      "observed_domain": "tehran-auto-import.com"
+    },
+    "label": "DIFFERENT",
+    "reason": "Different locations (Mazandaran vs Tehran) - different companies"
+  },
+  {
+    "id": "pair_007",
+    "candidate_a": {
+      "source": "google",
+      "source_url": "https://www.mazandaran-auto-import.ir",
+      "observed_name": "شرکت واردات خودرو مازندران",
+      "observed_domain": "www.mazandaran-auto-import.ir"
+    },
+    "candidate_b": {
+      "source": "google",
+      "source_url": "https://mazandaran-auto-import.ir",
+      "observed_name": "شرکت واردات خودرو مازندران",
+      "observed_domain": "mazandaran-auto-import.ir"
+    },
+    "label": "SAME",
+    "reason": "www vs non-www version of same domain - definite match"
+  },
+  {
+    "id": "pair_008",
+    "candidate_a": {
+      "source": "instagram",
+      "source_url": "https://instagram.com/tehran_restaurant_1",
+      "observed_name": "رستوران تهرانی",
+      "observed_username": "tehran_restaurant_1",
+      "observed_phone": "+98 21 1111 2222"
+    },
+    "candidate_b": {
+      "source": "google",
+      "source_url": "https://tehran-restaurant.com",
+      "observed_name": "رستوران سنتی تهران",
+      "observed_domain": "tehran-restaurant.com",
+      "observed_phone": "021-3333-4444"
+    },
+    "label": "AMBIGUOUS",
+    "reason": "Similar names but different phones - may be related or different"
+  },
+  {
+    "id": "pair_009",
+    "candidate_a": {
+      "source": "google",
+      "source_url": "https://tehran-restaurant.com",
+      "observed_name": "رستوران سنتی تهران",
+      "observed_domain": "tehran-restaurant.com",
+      "observed_phone": "021-3333-4444"
+    },
+    "candidate_b": {
+      "source": "google",
+      "source_url": "https://www.tehran-restaurant.com",
+      "observed_name": "رستوران سنتی تهران",
+      "observed_domain": "www.tehran-restaurant.com",
+      "observed_phone": "021-3333-4444"
+    },
+    "label": "SAME",
+    "reason": "Same name, phone, and www/non-www domain - definite match"
+  },
+  {
+    "id": "pair_010",
+    "candidate_a": {
+      "source": "google",
+      "source_url": "https://tehran-restaurant.com",
+      "observed_name": "رستوران سنتی تهران",
+      "observed_domain": "tehran-restaurant.com"
+    },
+    "candidate_b": {
+      "source": "google",
+      "source_url": "https://tehran-cafe.com",
+      "observed_name": "کافه تهران",
+      "observed_domain": "tehran-cafe.com"
+    },
+    "label": "DIFFERENT",
+    "reason": "Restaurant vs Cafe - different businesses"
+  },
+  {
+    "id": "pair_011",
+    "candidate_a": {
+      "source": "google",
+      "source_url": "https://tehran-restaurant.com",
+      "observed_name": "رستوران سنتی تهران",
+      "observed_domain": "tehran-restaurant.com"
+    },
+    "candidate_b": {
+      "source": "google",
+      "source_url": "https://isfahan-restaurant.com",
+      "observed_name": "رستوران اصفهان",
+      "observed_domain": "isfahan-restaurant.com"
+    },
+    "label": "DIFFERENT",
+    "reason": "Different cities (Tehran vs Isfahan) - different restaurants"
+  },
+  {
+    "id": "pair_012",
+    "candidate_a": {
+      "source": "instagram",
+      "source_url": "https://instagram.com/example_auto",
+      "observed_name": "Example Auto Import",
+      "observed_username": "example_auto",
+      "observed_email": "info@example-auto.com"
+    },
+    "candidate_b": {
+      "source": "google",
+      "source_url": "https://example-auto.com",
+      "observed_name": "Example Auto Import LLC",
+      "observed_domain": "example-auto.com",
+      "observed_email": "info@example-auto.com"
+    },
+    "label": "SAME",
+    "reason": "Same email and similar name - definite match"
+  },
+  {
+    "id": "pair_013",
+    "candidate_a": {
+      "source": "google",
+      "source_url": "https://example-auto.com",
+      "observed_name": "Example Auto Import",
+      "observed_domain": "example-auto.com"
+    },
+    "candidate_b": {
+      "source": "google",
+      "source_url": "https://example-auto-parts.com",
+      "observed_name": "Example Auto Parts",
+      "observed_domain": "example-auto-parts.com"
+    },
+    "label": "DIFFERENT",
+    "reason": "Import vs Parts - different businesses despite similar names"
+  },
+  {
+    "id": "pair_014",
+    "candidate_a": {
+      "source": "google",
+      "source_url": "https://example.com",
+      "observed_name": "شرکت نمونه",
+      "observed_domain": "example.com",
+      "observed_phone": "+98 21 1234 5678"
+    },
+    "candidate_b": {
+      "source": "google",
+      "source_url": "https://example.com",
+      "observed_name": "شرکت نمونه",
+      "observed_domain": "example.com",
+      "observed_phone": "+98 21 1234 5678"
+    },
+    "label": "SAME",
+    "reason": "Exact same URL, name, and phone - duplicate result"
+  },
+  {
+    "id": "pair_015",
+    "candidate_a": {
+      "source": "instagram",
+      "source_url": "https://instagram.com/biz1",
+      "observed_name": "Business One",
+      "observed_username": "biz1"
+    },
+    "candidate_b": {
+      "source": "instagram",
+      "source_url": "https://instagram.com/biz2",
+      "observed_name": "Business Two",
+      "observed_username": "biz2"
+    },
+    "label": "DIFFERENT",
+    "reason": "Different Instagram accounts and names - different businesses"
+  }
+]

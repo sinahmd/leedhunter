@@ -1,0 +1,72 @@
+[
+  {
+    "source": "instagram",
+    "source_url": "https://instagram.com/tehran_restaurant_1",
+    "observed_name": "رستوران تهرانی",
+    "observed_domain": null,
+    "observed_username": "tehran_restaurant_1",
+    "observed_phone": "+98 21 1111 2222",
+    "observed_email": null,
+    "metadata": {
+      "platform": "instagram",
+      "location": "تهران",
+      "cuisine": "ایرانی"
+    }
+  },
+  {
+    "source": "google",
+    "source_url": "https://tehran-restaurant.com",
+    "observed_name": "رستوران سنتی تهران",
+    "observed_domain": "tehran-restaurant.com",
+    "observed_username": null,
+    "observed_phone": "021-3333-4444",
+    "observed_email": "info@tehran-restaurant.com",
+    "metadata": {
+      "platform": "website",
+      "location": "تهران",
+      "cuisine": "سنتی"
+    }
+  },
+  {
+    "source": "google",
+    "source_url": "https://www.tehran-restaurant.com",
+    "observed_name": "رستوران سنتی تهران",
+    "observed_domain": "www.tehran-restaurant.com",
+    "observed_username": null,
+    "observed_phone": "021-3333-4444",
+    "observed_email": "info@tehran-restaurant.com",
+    "metadata": {
+      "platform": "website",
+      "duplicate": "true",
+      "note": "www version"
+    }
+  },
+  {
+    "source": "google",
+    "source_url": "https://tehran-cafe.com",
+    "observed_name": "کافه تهران",
+    "observed_domain": "tehran-cafe.com",
+    "observed_username": null,
+    "observed_phone": "021-5555-6666",
+    "observed_email": "info@tehran-cafe.com",
+    "metadata": {
+      "platform": "website",
+      "location": "تهران",
+      "note": "Cafe not restaurant"
+    }
+  },
+  {
+    "source": "google",
+    "source_url": "https://isfahan-restaurant.com",
+    "observed_name": "رستوران اصفهان",
+    "observed_domain": "isfahan-restaurant.com",
+    "observed_username": null,
+    "observed_phone": "031-7777-8888",
+    "observed_email": "info@isfahan-restaurant.com",
+    "metadata": {
+      "platform": "website",
+      "location": "اصفهان",
+      "note": "Irrelevant - Isfahan not Tehran"
+    }
+  }
+]

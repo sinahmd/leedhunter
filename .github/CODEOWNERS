@@ -1,0 +1,11 @@
+# Default owners for everything
+* @sinahmd
+
+# Domain layer
+src/leedhunter/domain/ @sinahmd
+
+# Infrastructure
+src/leedhunter/infrastructure/ @sinahmd
+
+# CI/CD
+.github/ @sinahmd

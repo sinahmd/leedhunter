@@ -1,0 +1,44 @@
+name: Package Validation
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+
+    - name: Install build tools
+      run: |
+        python -m pip install --upgrade pip
+        pip install build twine
+
+    - name: Build package
+      run: |
+        python -m build
+
+    - name: Check package metadata
+      run: |
+        twine check dist/*
+
+    - name: Verify package contents
+      run: |
+        tar -tzf dist/*.tar.gz | head -50
+
+    - name: Test clean installation
+      run: |
+        python -m venv test-venv
+        source test-venv/bin/activate
+        pip install dist/*.whl
+        leedhunter --version
+        leedhunter doctor

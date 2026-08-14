@@ -1,0 +1,151 @@
+[
+  {
+    "source": "instagram",
+    "source_url": "https://instagram.com/auto_import_mazandaran",
+    "observed_name": "واردات خودرو مازندران",
+    "observed_domain": null,
+    "observed_username": "auto_import_mazandaran",
+    "observed_phone": "+98 912 123 4567",
+    "observed_email": null,
+    "metadata": {
+      "platform": "instagram",
+      "followers": "15000",
+      "location": "مازندران"
+    }
+  },
+  {
+    "source": "instagram",
+    "source_url": "https://instagram.com/auto_import_mazandaran",
+    "observed_name": "واردات خودرو مازندران",
+    "observed_domain": null,
+    "observed_username": "auto_import_mazandaran",
+    "observed_phone": "+98 912 123 4567",
+    "observed_email": null,
+    "metadata": {
+      "platform": "instagram",
+      "duplicate": "true"
+    }
+  },
+  {
+    "source": "google",
+    "source_url": "https://mazandaran-auto-import.ir",
+    "observed_name": "شرکت واردات خودرو مازندران",
+    "observed_domain": "mazandaran-auto-import.ir",
+    "observed_username": null,
+    "observed_phone": "011-3333-4444",
+    "observed_email": "info@mazandaran-auto-import.ir",
+    "metadata": {
+      "platform": "website",
+      "location": "ساری"
+    }
+  },
+  {
+    "source": "google",
+    "source_url": "https://www.mazandaran-auto-import.ir",
+    "observed_name": "شرکت واردات خودرو مازندران",
+    "observed_domain": "www.mazandaran-auto-import.ir",
+    "observed_username": null,
+    "observed_phone": "011-3333-4444",
+    "observed_email": "info@mazandaran-auto-import.ir",
+    "metadata": {
+      "platform": "website",
+      "duplicate": "true",
+      "note": "www version of same domain"
+    }
+  },
+  {
+    "source": "linkedin",
+    "source_url": "https://linkedin.com/company/mazandaran-auto-import",
+    "observed_name": "Mazandaran Auto Import Co.",
+    "observed_domain": "mazandaran-auto-import.ir",
+    "observed_username": "mazandaran-auto-import",
+    "observed_phone": null,
+    "observed_email": "info@mazandaran-auto-import.ir",
+    "metadata": {
+      "platform": "linkedin",
+      "employees": "25"
+    }
+  },
+  {
+    "source": "google",
+    "source_url": "https://auto-importers-mazandaran.com",
+    "observed_name": "واردکنندگان خودرو مازندران",
+    "observed_domain": "auto-importers-mazandaran.com",
+    "observed_username": null,
+    "observed_phone": "+98 911 234 5678",
+    "observed_email": "contact@auto-importers-mazandaran.com",
+    "metadata": {
+      "platform": "website",
+      "location": "بابل"
+    }
+  },
+  {
+    "source": "instagram",
+    "source_url": "https://instagram.com/auto_importers_mazandaran",
+    "observed_name": "واردکنندگان خودرو مازندران",
+    "observed_domain": null,
+    "observed_username": "auto_importers_mazandaran",
+    "observed_phone": "+98 911 234 5678",
+    "observed_email": null,
+    "metadata": {
+      "platform": "instagram",
+      "note": "Same company as auto-importers-mazandaran.com"
+    }
+  },
+  {
+    "source": "google",
+    "source_url": "https://mazandaran-cars.ir",
+    "observed_name": "خودرو مازندران",
+    "observed_domain": "mazandaran-cars.ir",
+    "observed_username": null,
+    "observed_phone": "011-4444-5555",
+    "observed_email": "info@mazandaran-cars.ir",
+    "metadata": {
+      "platform": "website",
+      "location": "ساری",
+      "note": "Different company, similar name"
+    }
+  },
+  {
+    "source": "google",
+    "source_url": "https://tehran-auto-import.com",
+    "observed_name": "واردات خودرو تهران",
+    "observed_domain": "tehran-auto-import.com",
+    "observed_username": null,
+    "observed_phone": "021-1234-5678",
+    "observed_email": "info@tehran-auto-import.com",
+    "metadata": {
+      "platform": "website",
+      "location": "تهران",
+      "note": "Irrelevant - Tehran not Mazandaran"
+    }
+  },
+  {
+    "source": "google",
+    "source_url": "https://mazandaran-auto-parts.ir",
+    "observed_name": "لوازم یدکی خودرو مازندران",
+    "observed_domain": "mazandaran-auto-parts.ir",
+    "observed_username": null,
+    "observed_phone": "011-5555-6666",
+    "observed_email": "info@mazandaran-auto-parts.ir",
+    "metadata": {
+      "platform": "website",
+      "location": "ساری",
+      "note": "Irrelevant - auto parts not import"
+    }
+  },
+  {
+    "source": "google",
+    "source_url": "https://azarbaijan-auto-import.ir",
+    "observed_name": "واردات خودرو آذربایجان",
+    "observed_domain": "azarbaijan-auto-import.ir",
+    "observed_username": null,
+    "observed_phone": "041-1234-5678",
+    "observed_email": "info@azarbaijan-auto-import.ir",
+    "metadata": {
+      "platform": "website",
+      "location": "تبریز",
+      "note": "Irlevant - Azarbaijan not Mazandaran"
+    }
+  }
+]
