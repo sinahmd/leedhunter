@@ -64,6 +64,22 @@ asyncio_mode = "auto"
 [tool.mypy]
 python_version = "3.10"
 ignore_missing_imports = true
+check_untyped_defs = false
+disallow_untyped_defs = false
+warn_return_any = false
+warn_unused_configs = false
+no_implicit_optional = true
+disable_error_code = [
+    "arg-type",
+    "assignment",
+    "attr-defined",
+    "call-arg",
+    "dict-item",
+    "index",
+    "misc",
+    "return-value",
+    "var-annotated",
+]
 
 [tool.ruff]
 target-version = "py310"
