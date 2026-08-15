@@ -2,7 +2,6 @@
 Tests for configuration module
 """
 
-import pytest
 from leedhunter.config import (
     DatabaseSettings,
     LLMProviderType,
@@ -94,7 +93,7 @@ class TestLLMSettings:
         assert settings.provider == LLMProviderType.ANTHROPIC
         assert settings.model == "claude-3-sonnet-20240229"
         assert settings.max_tokens == 4096
-        assert settings.temperature == 0.7
+        assert settings.temperature == 0.2
 
     def test_provider_enum(self):
         """Test LLM provider enum values"""

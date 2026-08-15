@@ -2,12 +2,10 @@
 Tests for enrichment service
 """
 
-import pytest
-
 from leedhunter.application.enrichment.enricher import (
-    EnrichmentService,
-    EnrichmentResult,
     EnrichedData,
+    EnrichmentResult,
+    EnrichmentService,
 )
 
 

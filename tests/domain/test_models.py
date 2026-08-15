@@ -3,10 +3,10 @@ Tests for domain models
 """
 
 import pytest
-from datetime import datetime
 from pydantic import ValidationError
 
 from leedhunter.domain.models import (
+    Candidate,
     Candidate,
     Entity,
     EntityIdentity,
@@ -16,8 +16,7 @@ from leedhunter.domain.models import (
     LeadStatus,
     Opportunity,
     SearchIntent,
-    SearchQuery,
-    Signal,
+    
     SignalType,
 )
 
@@ -45,34 +44,6 @@ class TestSearchIntent:
         assert intent.location == "Mazandaran"
         assert intent.industry == "Automotive"
         assert intent.constraints == ["import", "vehicles"]
-
-
-class TestSearchQuery:
-    """Tests for SearchQuery model"""
-
-    def test_create_minimal_query(self):
-        """Test creating a SearchQuery with minimal fields"""
-        query = SearchQuery()
-        assert query.terms == []
-        assert query.exact_phrases == []
-        assert query.operators == {}
-        assert query.exclusions == []
-        assert query.provider is None
-
-    def test_create_full_query(self):
-        """Test creating a SearchQuery with all fields"""
-        query = SearchQuery(
-            terms=["auto", "importers"],
-            exact_phrases=["واردات خودرو"],
-            operators={"site": "instagram.com"},
-            exclusions=["used", "parts"],
-            provider="google",
-        )
-        assert query.terms == ["auto", "importers"]
-        assert query.exact_phrases == ["واردات خودرو"]
-        assert query.operators == {"site": "instagram.com"}
-        assert query.exclusions == ["used", "parts"]
-        assert query.provider == "google"
 
 
 class TestCandidate:

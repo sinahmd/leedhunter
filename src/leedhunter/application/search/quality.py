@@ -11,9 +11,8 @@ It measures:
 
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
-from typing import Optional
 
-from leedhunter.domain.search.query import Query, QueryBuilder
+from leedhunter.domain.search.query import Query
 
 
 @dataclass
@@ -122,10 +121,10 @@ class SearchQualityTracker:
         # Update average execution time
         n = provider.total_queries
         provider.average_execution_time = (
-            (provider.average_execution_time * (n - 1) + metrics.execution_time) / n
-        )
+            provider.average_execution_time * (n - 1) + metrics.execution_time
+        ) / n
 
-    def get_provider_metrics(self, provider: str) -> Optional[ProviderMetrics]:
+    def get_provider_metrics(self, provider: str) -> ProviderMetrics | None:
         """Get metrics for a specific provider"""
         return self._provider_metrics.get(provider)
 
@@ -148,8 +147,7 @@ class SearchQualityTracker:
         # Average effectiveness
         effectiveness_values = [m.effectiveness for m in self._query_metrics]
         report.average_effectiveness = (
-            sum(effectiveness_values) / len(effectiveness_values)
-            if effectiveness_values else 0.0
+            sum(effectiveness_values) / len(effectiveness_values) if effectiveness_values else 0.0
         )
 
         # Provider metrics

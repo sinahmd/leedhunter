@@ -7,7 +7,8 @@ Every important action should produce a domain event.
 
 from datetime import datetime, timezone
 from enum import Enum
-from typing import Any, Optional
+from typing import Any
+
 from pydantic import BaseModel, Field
 
 
@@ -66,8 +67,8 @@ class DomainEvent(BaseModel):
 
     event_type: EventType
     timestamp: datetime = Field(default_factory=_utcnow)
-    event_id: Optional[str] = None
-    correlation_id: Optional[str] = None  # Research job ID
+    event_id: str | None = None
+    correlation_id: str | None = None  # Research job ID
     metadata: dict[str, Any] = Field(default_factory=dict)
 
 
@@ -76,8 +77,8 @@ class IntentCreatedEvent(DomainEvent):
 
     event_type: EventType = EventType.INTENT_CREATED
     objective: str = ""
-    location: Optional[str] = None
-    industry: Optional[str] = None
+    location: str | None = None
+    industry: str | None = None
 
 
 class QueryGeneratedEvent(DomainEvent):
@@ -86,7 +87,7 @@ class QueryGeneratedEvent(DomainEvent):
     event_type: EventType = EventType.QUERY_GENERATED
     query_string: str = ""
     query_type: str = ""
-    provider: Optional[str] = None
+    provider: str | None = None
 
 
 class QueryExecutedEvent(DomainEvent):
@@ -105,17 +106,17 @@ class ResultReceivedEvent(DomainEvent):
     event_type: EventType = EventType.RESULT_RECEIVED
     source: str = ""
     result_count: int = 0
-    query_id: Optional[str] = None
+    query_id: str | None = None
 
 
 class CandidateCreatedEvent(DomainEvent):
     """Event fired when a candidate is created"""
 
     event_type: EventType = EventType.CANDIDATE_CREATED
-    candidate_id: Optional[str] = None
+    candidate_id: str | None = None
     source: str = ""
     source_url: str = ""
-    observed_name: Optional[str] = None
+    observed_name: str | None = None
 
 
 class CandidateDeduplicatedEvent(DomainEvent):
@@ -144,7 +145,7 @@ class EntityCreatedEvent(DomainEvent):
     event_type: EventType = EventType.ENTITY_CREATED
     entity_id: str = ""
     canonical_name: str = ""
-    canonical_domain: Optional[str] = None
+    canonical_domain: str | None = None
     source: str = ""
 
 
@@ -162,7 +163,7 @@ class EvidenceCreatedEvent(DomainEvent):
     """Event fired when evidence is created"""
 
     event_type: EventType = EventType.EVIDENCE_CREATED
-    evidence_id: Optional[str] = None
+    evidence_id: str | None = None
     entity_id: str = ""
     claim: str = ""
     confidence: float = 0.0
@@ -173,7 +174,7 @@ class SignalCreatedEvent(DomainEvent):
     """Event fired when a signal is created"""
 
     event_type: EventType = EventType.SIGNAL_CREATED
-    signal_id: Optional[str] = None
+    signal_id: str | None = None
     entity_id: str = ""
     signal_type: str = ""
     confidence: float = 0.0
@@ -183,7 +184,7 @@ class LeadCreatedEvent(DomainEvent):
     """Event fired when a lead is created"""
 
     event_type: EventType = EventType.LEAD_CREATED
-    lead_id: Optional[str] = None
+    lead_id: str | None = None
     entity_id: str = ""
     score: float = 0.0
     status: str = ""
@@ -204,8 +205,8 @@ class ResearchStartedEvent(DomainEvent):
     event_type: EventType = EventType.RESEARCH_STARTED
     research_id: str = ""
     objective: str = ""
-    location: Optional[str] = None
-    industry: Optional[str] = None
+    location: str | None = None
+    industry: str | None = None
 
 
 class ResearchCompletedEvent(DomainEvent):

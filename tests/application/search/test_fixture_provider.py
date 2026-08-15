@@ -2,11 +2,12 @@
 Tests for fixture search provider
 """
 
-import pytest
 from pathlib import Path
 
+import pytest
+
 from leedhunter.application.search.providers.fixture import FixtureSearchProvider
-from leedhunter.domain.models import SearchQuery
+from leedhunter.domain.search.query import Query
 
 
 class TestFixtureSearchProvider:
@@ -42,7 +43,7 @@ class TestFixtureSearchProvider:
     @pytest.mark.asyncio
     async def test_search_auto_importers(self):
         """Test searching for auto importers"""
-        query = SearchQuery(
+        query = Query(
             terms=["auto", "importers", "mazandaran"],
         )
         result = await self.provider.search(query)
@@ -54,7 +55,7 @@ class TestFixtureSearchProvider:
     @pytest.mark.asyncio
     async def test_search_restaurants(self):
         """Test searching for restaurants"""
-        query = SearchQuery(
+        query = Query(
             terms=["restaurant", "tehran"],
         )
         result = await self.provider.search(query)
@@ -65,7 +66,7 @@ class TestFixtureSearchProvider:
     @pytest.mark.asyncio
     async def test_search_persian_terms(self):
         """Test searching with Persian terms"""
-        query = SearchQuery(
+        query = Query(
             terms=["خودرو", "مازندران"],
         )
         result = await self.provider.search(query)
@@ -76,7 +77,7 @@ class TestFixtureSearchProvider:
     @pytest.mark.asyncio
     async def test_search_default_fixture(self):
         """Test searching with default fixture"""
-        query = SearchQuery(
+        query = Query(
             terms=["unknown", "query"],
         )
         result = await self.provider.search(query)
@@ -90,10 +91,9 @@ class TestFixtureSearchProvider:
         """Test searching with specified default fixture"""
         fixtures_dir = Path(__file__).parent.parent.parent / "fixtures" / "search"
         provider = FixtureSearchProvider(
-            fixtures_dir=str(fixtures_dir),
-            default_fixture="tehran_restaurants.json"
+            fixtures_dir=str(fixtures_dir), default_fixture="tehran_restaurants.json"
         )
-        query = SearchQuery(terms=["test"])
+        query = Query(terms=["test"])
         result = await provider.search(query)
 
         assert result.success is True
@@ -102,10 +102,8 @@ class TestFixtureSearchProvider:
     @pytest.mark.asyncio
     async def test_search_empty_fixture(self):
         """Test searching with non-existent fixture"""
-        provider = FixtureSearchProvider(
-            default_fixture="nonexistent.json"
-        )
-        query = SearchQuery(terms=["test"])
+        provider = FixtureSearchProvider(default_fixture="nonexistent.json")
+        query = Query(terms=["test"])
         result = await provider.search(query)
 
         assert result.success is True
@@ -114,7 +112,7 @@ class TestFixtureSearchProvider:
     @pytest.mark.asyncio
     async def test_candidate_fields(self):
         """Test that candidates have correct fields"""
-        query = SearchQuery(terms=["auto", "mazandaran"])
+        query = Query(terms=["auto", "mazandaran"])
         result = await self.provider.search(query)
 
         assert len(result.candidates) > 0
@@ -127,15 +125,18 @@ class TestFixtureSearchProvider:
     @pytest.mark.asyncio
     async def test_add_fixture(self):
         """Test adding fixture programmatically"""
-        self.provider.add_fixture("test", [
-            {
-                "source": "test",
-                "source_url": "https://test.com",
-                "observed_name": "Test Business",
-            }
-        ])
+        self.provider.add_fixture(
+            "test",
+            [
+                {
+                    "source": "test",
+                    "source_url": "https://test.com",
+                    "observed_name": "Test Business",
+                }
+            ],
+        )
 
-        query = SearchQuery(terms=["test"])
+        query = Query(terms=["test"])
         # Force use of test fixture
         self.provider._default_fixture = "test"
         result = await self.provider.search(query)
@@ -149,7 +150,7 @@ class TestFixtureSearchProvider:
         self.provider.add_fixture("test", [{"source": "test", "source_url": "https://test.com"}])
         self.provider.clear_fixtures()
 
-        query = SearchQuery(terms=["test"])
+        query = Query(terms=["test"])
         self.provider._default_fixture = "test"
         result = await self.provider.search(query)
 
@@ -158,7 +159,7 @@ class TestFixtureSearchProvider:
     @pytest.mark.asyncio
     async def test_search_time_recorded(self):
         """Test that search time is recorded"""
-        query = SearchQuery(terms=["auto", "mazandaran"])
+        query = Query(terms=["auto", "mazandaran"])
         result = await self.provider.search(query)
 
         assert result.search_time >= 0
@@ -166,7 +167,7 @@ class TestFixtureSearchProvider:
     @pytest.mark.asyncio
     async def test_total_results(self):
         """Test total results count"""
-        query = SearchQuery(terms=["auto", "mazandaran"])
+        query = Query(terms=["auto", "mazandaran"])
         result = await self.provider.search(query)
 
         assert result.total_results == len(result.candidates)
@@ -174,14 +175,14 @@ class TestFixtureSearchProvider:
     @pytest.mark.asyncio
     async def test_validate_query(self):
         """Test query validation"""
-        query = SearchQuery(terms=["test"])
+        query = Query(terms=["test"])
         errors = self.provider.validate_query(query)
         assert len(errors) == 0
 
     @pytest.mark.asyncio
     async def test_validate_query_with_operator(self):
         """Test query validation with supported operator"""
-        query = SearchQuery(
+        query = Query(
             terms=["test"],
             operators={"site": "example.com"},
         )

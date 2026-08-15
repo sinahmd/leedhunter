@@ -2,8 +2,6 @@
 Tests for sandbox configuration
 """
 
-import pytest
-
 from leedhunter.infrastructure.sandbox.config import (
     SandboxConfig,
     SandboxManager,

@@ -6,25 +6,25 @@ This module provides database connectivity, session management, and ORM models.
 
 from leedhunter.infrastructure.database.base import (
     Base,
-    get_engine_instance,
-    get_session_factory_instance,
-    get_session,
-    init_db,
     close_db,
+    get_engine_instance,
+    get_session,
+    get_session_factory_instance,
+    init_db,
 )
 from leedhunter.infrastructure.database.models import (
-    EntityModel,
     EntityIdentityModel,
+    EntityModel,
     EvidenceModel,
-    SignalModel,
-    OpportunityModel,
     LeadModel,
+    OpportunityModel,
+    SignalModel,
 )
 from leedhunter.infrastructure.database.repositories import (
     EntityRepository,
     EvidenceRepository,
-    SignalRepository,
     LeadRepository,
+    SignalRepository,
 )
 
 __all__ = [

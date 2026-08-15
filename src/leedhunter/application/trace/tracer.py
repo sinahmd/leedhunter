@@ -22,7 +22,7 @@ Every research job should produce traceable events:
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from enum import Enum
-from typing import Any, Optional
+from typing import Any
 
 
 class TraceEventType(str, Enum):
@@ -76,10 +76,10 @@ class TraceEvent:
 
     event_type: TraceEventType
     timestamp: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
-    event_id: Optional[str] = None
-    research_id: Optional[str] = None
+    event_id: str | None = None
+    research_id: str | None = None
     metadata: dict[str, Any] = field(default_factory=dict)
-    duration_ms: Optional[float] = None
+    duration_ms: float | None = None
 
     def to_dict(self) -> dict:
         """Convert to dictionary"""
@@ -99,13 +99,13 @@ class ResearchTrace:
 
     research_id: str
     started_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
-    completed_at: Optional[datetime] = None
+    completed_at: datetime | None = None
     events: list[TraceEvent] = field(default_factory=list)
     success: bool = True
-    error_message: Optional[str] = None
+    error_message: str | None = None
 
     @property
-    def duration_seconds(self) -> Optional[float]:
+    def duration_seconds(self) -> float | None:
         """Get duration in seconds"""
         if self.completed_at and self.started_at:
             return (self.completed_at - self.started_at).total_seconds()
@@ -143,7 +143,7 @@ class ResearchTracer:
 
     def __init__(self):
         self._traces: dict[str, ResearchTrace] = {}
-        self._current_research_id: Optional[str] = None
+        self._current_research_id: str | None = None
 
     def start_trace(self, research_id: str) -> ResearchTrace:
         """
@@ -170,7 +170,7 @@ class ResearchTracer:
         self,
         research_id: str,
         success: bool = True,
-        error_message: Optional[str] = None,
+        error_message: str | None = None,
     ) -> None:
         """
         End a research trace
@@ -186,7 +186,9 @@ class ResearchTracer:
             trace.success = success
             trace.error_message = error_message
 
-            event_type = TraceEventType.RESEARCH_COMPLETED if success else TraceEventType.RESEARCH_FAILED
+            event_type = (
+                TraceEventType.RESEARCH_COMPLETED if success else TraceEventType.RESEARCH_FAILED
+            )
             self.record_event(
                 event_type,
                 research_id=research_id,
@@ -199,9 +201,9 @@ class ResearchTracer:
     def record_event(
         self,
         event_type: TraceEventType,
-        research_id: Optional[str] = None,
-        metadata: Optional[dict[str, Any]] = None,
-        duration_ms: Optional[float] = None,
+        research_id: str | None = None,
+        metadata: dict[str, Any] | None = None,
+        duration_ms: float | None = None,
     ) -> TraceEvent:
         """
         Record a trace event
@@ -229,7 +231,7 @@ class ResearchTracer:
 
         return event
 
-    def get_trace(self, research_id: str) -> Optional[ResearchTrace]:
+    def get_trace(self, research_id: str) -> ResearchTrace | None:
         """Get trace for a research job"""
         return self._traces.get(research_id)
 
@@ -237,7 +239,7 @@ class ResearchTracer:
         """Get all traces"""
         return list(self._traces.values())
 
-    def generate_report(self, research_id: str) -> Optional[dict]:
+    def generate_report(self, research_id: str) -> dict | None:
         """
         Generate a report for a research job
 

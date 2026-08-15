@@ -2,11 +2,9 @@
 Tests for security hardening
 """
 
-import pytest
-
 from leedhunter.infrastructure.security.sanitizer import (
-    InputSanitizer,
     CredentialRedactor,
+    InputSanitizer,
 )
 
 

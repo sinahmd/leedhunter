@@ -15,13 +15,12 @@ import hashlib
 import json
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Optional
 
 from leedhunter.application.search.provider import (
-    SearchProvider,
-    SearchResult,
     ProviderHealth,
     ProviderStatus,
+    SearchProvider,
+    SearchResult,
 )
 from leedhunter.domain.models import Candidate
 from leedhunter.domain.search.query import Query
@@ -45,8 +44,8 @@ class FixtureSearchProvider(SearchProvider):
 
     def __init__(
         self,
-        fixtures_dir: Optional[str] = None,
-        default_fixture: Optional[str] = None,
+        fixtures_dir: str | None = None,
+        default_fixture: str | None = None,
     ):
         """
         Initialize fixture provider
@@ -100,7 +99,9 @@ class FixtureSearchProvider(SearchProvider):
                 return candidate
 
         # Fallback: return the expected path (may not exist)
-        return source_dir.parent.parent.parent.parent.parent.parent / "tests" / "fixtures" / "search"
+        return (
+            source_dir.parent.parent.parent.parent.parent.parent / "tests" / "fixtures" / "search"
+        )
 
     @property
     def name(self) -> str:
@@ -206,7 +207,7 @@ class FixtureSearchProvider(SearchProvider):
             # Return empty list if fixture doesn't exist
             return []
 
-        with open(fixture_path, "r", encoding="utf-8") as f:
+        with open(fixture_path, encoding="utf-8") as f:
             data = json.load(f)
 
         # Cache the fixture

@@ -5,11 +5,11 @@ Tests for web search provider
 import pytest
 
 from leedhunter.application.search.providers.web import (
+    MockWebSearchProvider,
     WebSearchConfig,
     WebSearchProvider,
-    MockWebSearchProvider,
 )
-from leedhunter.domain.models import SearchQuery
+from leedhunter.domain.search.query import Query
 
 
 class TestWebSearchConfig:
@@ -52,7 +52,7 @@ class TestWebSearchProvider:
         """Test that search raises NotImplementedError"""
         config = WebSearchConfig()
         provider = WebSearchProvider(config)
-        query = SearchQuery(terms=["test"])
+        query = Query(terms=["test"])
 
         with pytest.raises(NotImplementedError):
             await provider.search(query)
@@ -96,7 +96,7 @@ class TestMockWebSearchProvider:
     @pytest.mark.asyncio
     async def test_search(self):
         """Test search returns candidates"""
-        query = SearchQuery(terms=["business"])
+        query = Query(terms=["business"])
         result = await self.provider.search(query)
 
         assert result.success
@@ -106,7 +106,7 @@ class TestMockWebSearchProvider:
     @pytest.mark.asyncio
     async def test_search_candidate_fields(self):
         """Test search result candidate fields"""
-        query = SearchQuery(terms=["business"])
+        query = Query(terms=["business"])
         result = await self.provider.search(query)
 
         candidate = result.candidates[0]
@@ -117,7 +117,7 @@ class TestMockWebSearchProvider:
     @pytest.mark.asyncio
     async def test_search_with_metadata(self):
         """Test search result with metadata"""
-        query = SearchQuery(terms=["business"])
+        query = Query(terms=["business"])
         result = await self.provider.search(query)
 
         candidate = result.candidates[1]
@@ -127,7 +127,7 @@ class TestMockWebSearchProvider:
     async def test_search_unavailable(self):
         """Test search when provider unavailable"""
         provider = MockWebSearchProvider(available=False)
-        query = SearchQuery(terms=["test"])
+        query = Query(terms=["test"])
         result = await provider.search(query)
 
         assert not result.success
@@ -136,7 +136,7 @@ class TestMockWebSearchProvider:
     @pytest.mark.asyncio
     async def test_search_count(self):
         """Test search count tracking"""
-        query = SearchQuery(terms=["test"])
+        query = Query(terms=["test"])
 
         await self.provider.search(query)
         await self.provider.search(query)
@@ -160,7 +160,7 @@ class TestMockWebSearchProvider:
             },
         ]
         provider = MockWebSearchProvider(results=persian_results)
-        query = SearchQuery(terms=["شرکت"])
+        query = Query(terms=["شرکت"])
         result = await provider.search(query)
 
         assert result.success

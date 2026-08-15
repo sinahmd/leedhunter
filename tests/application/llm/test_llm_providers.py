@@ -5,19 +5,18 @@ All tests use mocked responses - no real API calls.
 """
 
 import pytest
-from unittest.mock import AsyncMock, MagicMock, patch
 
-from leedhunter.application.llm.provider import LLMProvider, LLMResponse, LLMUsage
 from leedhunter.application.llm.errors import (
-    LLMError,
     LLMAuthenticationError,
+    LLMBudgetExceededError,
+    LLMError,
+    LLMInvalidResponseError,
+    LLMProviderUnavailableError,
     LLMRateLimitError,
     LLMTimeoutError,
-    LLMProviderUnavailableError,
-    LLMInvalidResponseError,
-    LLMBudgetExceededError,
 )
 from leedhunter.application.llm.mock import MockLLMProvider
+from leedhunter.application.llm.provider import LLMProvider, LLMResponse, LLMUsage
 from leedhunter.application.llm.registry import LLMProviderRegistry
 
 
@@ -201,11 +200,13 @@ class TestLLMDisabledBehavior:
     def test_no_llm_provider_created_when_disabled(self):
         """Test no provider created when LLM is disabled"""
         import os
+
         os.environ["LEEDHUNTER_LLM_ENABLED"] = "false"
         os.environ["LEEDHUNTER_LLM_API_KEY"] = ""
 
         from leedhunter.application.llm.registry import create_llm_provider_from_config
         from leedhunter.config import reset_settings
+
         reset_settings()
 
         provider = create_llm_provider_from_config()
@@ -214,11 +215,13 @@ class TestLLMDisabledBehavior:
     def test_no_llm_provider_created_when_no_key(self):
         """Test no provider created when API key is missing"""
         import os
+
         os.environ["LEEDHUNTER_LLM_ENABLED"] = "true"
         os.environ["LEEDHUNTER_LLM_API_KEY"] = ""
 
         from leedhunter.application.llm.registry import create_llm_provider_from_config
         from leedhunter.config import reset_settings
+
         reset_settings()
 
         provider = create_llm_provider_from_config()

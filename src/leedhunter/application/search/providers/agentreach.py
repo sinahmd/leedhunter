@@ -14,24 +14,16 @@ This module provides:
 - MockAgentReachProvider: For testing without real API
 """
 
-from dataclasses import dataclass, field
-from datetime import datetime, timezone
-from typing import Optional
+from dataclasses import dataclass
 
 from leedhunter.application.search.provider import (
-    SearchProvider,
-    SearchResult,
     ProviderHealth,
     ProviderStatus,
+    SearchProvider,
+    SearchResult,
 )
 from leedhunter.domain.models import Candidate
 from leedhunter.domain.search.query import Query
-from leedhunter.infrastructure.errors import (
-    ProviderError,
-    AuthenticationError,
-    RateLimitError,
-    NetworkError,
-)
 
 
 @dataclass
@@ -104,7 +96,7 @@ class MockAgentReachProvider(SearchProvider):
 
     def __init__(
         self,
-        results: Optional[list[dict]] = None,
+        results: list[dict] | None = None,
         available: bool = True,
     ):
         self._results = results or []

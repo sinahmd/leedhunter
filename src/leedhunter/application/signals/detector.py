@@ -15,12 +15,11 @@ Signals must reference evidence IDs.
 
 import hashlib
 from dataclasses import dataclass, field
-from typing import Optional
 
 from leedhunter.domain.models import (
-    Evidence,
     EntityIdentity,
     EntityIdentityType,
+    Evidence,
     Signal,
     SignalType,
 )
@@ -83,7 +82,7 @@ class SignalDetector:
         ),
     ]
 
-    def __init__(self, rules: Optional[list[SignalRule]] = None):
+    def __init__(self, rules: list[SignalRule] | None = None):
         self._rules = rules or self.DEFAULT_RULES
 
     def detect_from_evidence(
@@ -106,10 +105,7 @@ class SignalDetector:
 
         for rule in self._rules:
             # Check if any keywords match
-            matched_keywords = [
-                kw for kw in rule.keywords
-                if kw.lower() in text
-            ]
+            matched_keywords = [kw for kw in rule.keywords if kw.lower() in text]
 
             if matched_keywords:
                 # Calculate confidence: base evidence confidence + keyword boost
@@ -198,7 +194,7 @@ class SignalDetector:
         self,
         entity_id: str,
         evidence_list: list[Evidence],
-        identities: Optional[list[EntityIdentity]] = None,
+        identities: list[EntityIdentity] | None = None,
     ) -> list[Signal]:
         """
         Detect signals from multiple evidence items and identities
@@ -231,9 +227,10 @@ class SignalDetector:
         by_type: dict[SignalType, Signal] = {}
 
         for signal in signals:
-            if signal.signal_type not in by_type:
-                by_type[signal.signal_type] = signal
-            elif signal.confidence > by_type[signal.signal_type].confidence:
+            if (
+                signal.signal_type not in by_type
+                or signal.confidence > by_type[signal.signal_type].confidence
+            ):
                 by_type[signal.signal_type] = signal
 
         return list(by_type.values())

@@ -5,7 +5,7 @@ Verifies that all required services and configurations are properly set up.
 """
 
 import sys
-from typing import Callable
+from collections.abc import Callable
 
 from rich.console import Console
 from rich.table import Table
@@ -29,9 +29,7 @@ class HealthCheck:
 def check_python_version() -> bool:
     """Check Python version is >= 3.10"""
     major, minor = sys.version_info[:2]
-    if major >= 3 and minor >= 10:
-        return True
-    return False
+    return bool(major >= 3 and minor >= 10)
 
 
 def check_configuration() -> bool:
@@ -47,7 +45,8 @@ def check_database_connection() -> bool:
     """Check PostgreSQL connection"""
     try:
         import asyncpg
-        settings = get_settings()
+
+        get_settings()
         # We'll implement actual connection check later
         # For now, just check that asyncpg is available
         return True
@@ -61,7 +60,8 @@ def check_redis_connection() -> bool:
     """Check Redis connection"""
     try:
         import redis.asyncio as aioredis
-        settings = get_settings()
+
+        get_settings()
         # We'll implement actual connection check later
         # For now, just check that redis is available
         return True
@@ -75,6 +75,7 @@ def check_sqlalchemy() -> bool:
     """Check SQLAlchemy is available"""
     try:
         import sqlalchemy
+
         return True
     except ImportError:
         return False
@@ -84,6 +85,7 @@ def check_alembic() -> bool:
     """Check Alembic is available"""
     try:
         import alembic
+
         return True
     except ImportError:
         return False
@@ -93,6 +95,7 @@ def check_pydantic() -> bool:
     """Check Pydantic is available"""
     try:
         import pydantic
+
         return True
     except ImportError:
         return False
@@ -102,6 +105,7 @@ def check_typer() -> bool:
     """Check Typer is available"""
     try:
         import typer
+
         return True
     except ImportError:
         return False
@@ -111,6 +115,7 @@ def check_rich() -> bool:
     """Check Rich is available"""
     try:
         import rich
+
         return True
     except ImportError:
         return False
@@ -136,6 +141,7 @@ def check_llm_configuration() -> tuple[bool, str]:
         if llm.provider == "anthropic":
             try:
                 import anthropic
+
                 return True, f"Anthropic ({llm.model})"
             except ImportError:
                 return False, "anthropic package not installed"
@@ -143,6 +149,7 @@ def check_llm_configuration() -> tuple[bool, str]:
         if llm.provider == "openai":
             try:
                 import openai
+
                 return True, f"OpenAI ({llm.model})"
             except ImportError:
                 return False, "openai package not installed"
@@ -177,11 +184,13 @@ def run_doctor_check() -> bool:
 
     # Add LLM configuration check
     llm_configured, llm_message = check_llm_configuration()
-    checks.append(HealthCheck(
-        "LLM Provider",
-        lambda: llm_configured,
-        critical=False,
-    ))
+    checks.append(
+        HealthCheck(
+            "LLM Provider",
+            lambda: llm_configured,
+            critical=False,
+        )
+    )
 
     # Run checks
     for check in checks:
@@ -208,22 +217,14 @@ def run_doctor_check() -> bool:
     console.print(table)
 
     # Calculate results
-    critical_failures = [
-        check for check in checks
-        if check.critical and not check.passed
-    ]
+    critical_failures = [check for check in checks if check.critical and not check.passed]
 
-    non_critical_failures = [
-        check for check in checks
-        if not check.critical and not check.passed
-    ]
+    non_critical_failures = [check for check in checks if not check.critical and not check.passed]
 
     # Summary
     console.print()
     if critical_failures:
-        console.print(
-            f"[bold red]Failed: {len(critical_failures)} critical check(s)[/bold red]"
-        )
+        console.print(f"[bold red]Failed: {len(critical_failures)} critical check(s)[/bold red]")
         for check in critical_failures:
             console.print(f"  - {check.name}: {check.message}")
         console.print("\n[red]LeedHunter cannot start until critical issues are resolved.[/red]")

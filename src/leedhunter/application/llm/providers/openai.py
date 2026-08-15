@@ -7,18 +7,16 @@ Also supports OpenAI-compatible endpoints (local servers, other providers).
 Requires: pip install leedhunter[llm-openai]
 """
 
-import asyncio
 from dataclasses import dataclass
-from typing import Any, Optional
+from typing import Any
 
-from leedhunter.application.llm.provider import LLMProvider, LLMResponse, LLMUsage
 from leedhunter.application.llm.errors import (
     LLMAuthenticationError,
+    LLMProviderUnavailableError,
     LLMRateLimitError,
     LLMTimeoutError,
-    LLMProviderUnavailableError,
-    LLMInvalidResponseError,
 )
+from leedhunter.application.llm.provider import LLMProvider, LLMResponse, LLMUsage
 from leedhunter.infrastructure.retry import RetryConfig, retry_async
 
 
@@ -27,7 +25,7 @@ class OpenAIConfig:
     """Configuration for OpenAI provider"""
 
     api_key: str
-    base_url: Optional[str] = None  # For OpenAI-compatible endpoints
+    base_url: str | None = None  # For OpenAI-compatible endpoints
     model: str = "gpt-4"
     max_tokens: int = 4096
     temperature: float = 0.2
@@ -61,6 +59,7 @@ class OpenAILLMProvider(LLMProvider):
         if self._client is None:
             try:
                 import openai
+
                 kwargs = {"api_key": self._config.api_key}
                 if self._config.base_url:
                     kwargs["base_url"] = self._config.base_url
@@ -68,7 +67,7 @@ class OpenAILLMProvider(LLMProvider):
             except ImportError:
                 raise LLMProviderUnavailableError(
                     "openai",
-                    "openai package not installed. Install with: pip install leedhunter[llm-openai]"
+                    "openai package not installed. Install with: pip install leedhunter[llm-openai]",
                 )
         return self._client
 
@@ -85,7 +84,7 @@ class OpenAILLMProvider(LLMProvider):
     async def generate(
         self,
         prompt: str,
-        system_prompt: Optional[str] = None,
+        system_prompt: str | None = None,
         max_tokens: int = 4096,
         temperature: float = 0.7,
     ) -> LLMResponse:

@@ -5,16 +5,15 @@ These tests verify that all search providers implement the interface correctly.
 """
 
 import pytest
-from typing import Optional
 
 from leedhunter.application.search.provider import (
-    SearchProvider,
-    SearchResult,
     ProviderHealth,
     ProviderStatus,
+    SearchProvider,
+    SearchResult,
 )
-from leedhunter.domain.search.query import Query, QueryBuilder
 from leedhunter.domain.models import Candidate
+from leedhunter.domain.search.query import Query, QueryBuilder
 
 
 class MockSearchProvider(SearchProvider):
@@ -24,7 +23,7 @@ class MockSearchProvider(SearchProvider):
         self,
         name: str = "mock",
         available: bool = True,
-        candidates: Optional[list[Candidate]] = None,
+        candidates: list[Candidate] | None = None,
     ):
         self._name = name
         self._available = available

@@ -5,13 +5,11 @@ This module provides the main CLI application using Typer.
 """
 
 import asyncio
-import sys
-from typing import Optional
 
 import typer
 from rich.console import Console
-from rich.table import Table
 from rich.progress import Progress, SpinnerColumn, TextColumn
+from rich.table import Table
 
 from leedhunter import __version__
 
@@ -29,13 +27,15 @@ console = Console()
 def version_callback(value: bool) -> None:
     """Print version and exit"""
     if value:
-        console.print(f"[bold blue]LeedHunter[/bold blue] version [bold green]{__version__}[/bold green]")
+        console.print(
+            f"[bold blue]LeedHunter[/bold blue] version [bold green]{__version__}[/bold green]"
+        )
         raise typer.Exit()
 
 
 @app.callback()
 def main(
-    version: Optional[bool] = typer.Option(
+    version: bool | None = typer.Option(
         None,
         "--version",
         "-v",
@@ -69,7 +69,7 @@ def doctor() -> None:
 @app.command()
 def search(
     query: str = typer.Argument(..., help="Search query"),
-    provider: Optional[str] = typer.Option(
+    provider: str | None = typer.Option(
         None,
         "--provider",
         "-p",
@@ -92,8 +92,8 @@ def search(
 
     Returns candidates found through the specified search provider.
     """
-    from leedhunter.domain.search.query import Query, QueryBuilder
     from leedhunter.application.search.providers.fixture import FixtureSearchProvider
+    from leedhunter.domain.search.query import Query, QueryBuilder
 
     console.print(f"\n[bold blue]Searching:[/bold blue] {query}\n")
 
@@ -145,19 +145,19 @@ def search(
 @app.command()
 def hunt(
     objective: str = typer.Argument(..., help="Prospecting objective"),
-    location: Optional[str] = typer.Option(
+    location: str | None = typer.Option(
         None,
         "--location",
         "-l",
         help="Target location",
     ),
-    industry: Optional[str] = typer.Option(
+    industry: str | None = typer.Option(
         None,
         "--industry",
         "-i",
         help="Target industry",
     ),
-    provider: Optional[str] = typer.Option(
+    provider: str | None = typer.Option(
         None,
         "--provider",
         "-p",
@@ -186,8 +186,8 @@ def hunt(
 
     Turns a prospecting objective into qualified business opportunities.
     """
+    from leedhunter.application.orchestrator import ResearchConfig, ResearchOrchestrator
     from leedhunter.domain.models import SearchIntent
-    from leedhunter.application.orchestrator import ResearchOrchestrator, ResearchConfig
 
     console.print(f"\n[bold blue]Starting research:[/bold blue] {objective}\n")
 
@@ -225,7 +225,7 @@ def hunt(
 
     # Display results
     if result.success:
-        console.print(f"\n[bold green]Research Complete![/bold green]\n")
+        console.print("\n[bold green]Research Complete![/bold green]\n")
 
         # Summary
         table = Table(title="Research Summary")
@@ -268,25 +268,27 @@ def hunt(
             # Show details for top lead
             if verbose and result.leads:
                 top_lead = result.leads[0]
-                console.print(f"\n[bold]Top Lead Details:[/bold]")
+                console.print("\n[bold]Top Lead Details:[/bold]")
                 console.print(f"  Name: {top_lead.entity.canonical_name}")
                 console.print(f"  Score: {top_lead.score:.1f}")
                 console.print(f"  Domain: {top_lead.entity.canonical_domain or 'N/A'}")
 
                 if top_lead.entity.identities:
-                    console.print(f"  Identities:")
+                    console.print("  Identities:")
                     for identity in top_lead.entity.identities:
                         console.print(f"    - {identity.type.value}: {identity.value}")
 
                 if top_lead.signals:
-                    console.print(f"  Signals:")
+                    console.print("  Signals:")
                     for signal in top_lead.signals:
                         console.print(f"    - {signal.signal_type.value}: {signal.description}")
 
                 if top_lead.opportunities:
-                    console.print(f"  Opportunities:")
+                    console.print("  Opportunities:")
                     for opp in top_lead.opportunities:
-                        console.print(f"    - {opp.description} (relevance: {opp.relevance_score:.1f})")
+                        console.print(
+                            f"    - {opp.description} (relevance: {opp.relevance_score:.1f})"
+                        )
         else:
             console.print("[yellow]No qualified leads found[/yellow]")
     else:
@@ -296,7 +298,7 @@ def hunt(
 
 @app.command()
 def entity(
-    entity_id: Optional[str] = typer.Argument(None, help="Entity ID to inspect"),
+    entity_id: str | None = typer.Argument(None, help="Entity ID to inspect"),
     list_all: bool = typer.Option(
         False,
         "--list",
@@ -331,52 +333,58 @@ def score(
     has_phone: bool = typer.Option(False, "--phone", help="Entity has phone"),
     has_email: bool = typer.Option(False, "--email", help="Entity has email"),
     has_website: bool = typer.Option(False, "--website", help="Entity has website"),
-    industry: Optional[str] = typer.Option(None, "--industry", "-i", help="Industry"),
-    location: Optional[str] = typer.Option(None, "--location", "-l", help="Location"),
+    industry: str | None = typer.Option(None, "--industry", "-i", help="Industry"),
+    location: str | None = typer.Option(None, "--location", "-l", help="Location"),
 ) -> None:
     """
     Score a lead
 
     Calculate and display the lead score for an entity.
     """
+    from leedhunter.application.scoring.engine import ScoringEngine
     from leedhunter.domain.models import (
         Entity,
         EntityIdentity,
         EntityIdentityType,
+        Opportunity,
         Signal,
         SignalType,
-        Opportunity,
     )
-    from leedhunter.application.scoring.engine import ScoringEngine
 
     console.print(f"\n[bold blue]Scoring:[/bold blue] {entity_name}\n")
 
     # Create entity
     identities = []
     if has_phone:
-        identities.append(EntityIdentity(
-            type=EntityIdentityType.PHONE,
-            value="+98 912 123 4567",
-            normalized_value="09121234567",
-            source="manual",
-            source_url="manual",
-        ))
+        identities.append(
+            EntityIdentity(
+                type=EntityIdentityType.PHONE,
+                value="+98 912 123 4567",
+                normalized_value="09121234567",
+                source="manual",
+                source_url="manual",
+            )
+        )
     if has_email:
-        identities.append(EntityIdentity(
-            type=EntityIdentityType.EMAIL,
-            value="info@example.com",
-            normalized_value="info@example.com",
-            source="manual",
-            source_url="manual",
-        ))
+        identities.append(
+            EntityIdentity(
+                type=EntityIdentityType.EMAIL,
+                value="info@example.com",
+                normalized_value="info@example.com",
+                source="manual",
+                source_url="manual",
+            )
+        )
     if has_website:
-        identities.append(EntityIdentity(
-            type=EntityIdentityType.WEBSITE,
-            value="example.com",
-            normalized_value="example.com",
-            source="manual",
-            source_url="manual",
-        ))
+        identities.append(
+            EntityIdentity(
+                type=EntityIdentityType.WEBSITE,
+                value="example.com",
+                normalized_value="example.com",
+                source="manual",
+                source_url="manual",
+            )
+        )
 
     metadata = {}
     if industry:
@@ -414,7 +422,9 @@ def score(
     explanation = engine.explain_score(breakdown)
 
     # Display score
-    console.print(f"[bold]Total Score: [{_score_color(breakdown.total_score)}]{breakdown.total_score:.1f}/100[/{_score_color(breakdown.total_score)}][/bold]\n")
+    console.print(
+        f"[bold]Total Score: [{_score_color(breakdown.total_score)}]{breakdown.total_score:.1f}/100[/{_score_color(breakdown.total_score)}][/bold]\n"
+    )
 
     table = Table(title="Score Breakdown")
     table.add_column("Factor", style="cyan")
@@ -446,13 +456,13 @@ def export(
         "-f",
         help="Export format (json, csv)",
     ),
-    output: Optional[str] = typer.Option(
+    output: str | None = typer.Option(
         None,
         "--output",
         "-o",
         help="Output file path",
     ),
-    status: Optional[str] = typer.Option(
+    status: str | None = typer.Option(
         None,
         "--status",
         "-s",
@@ -463,13 +473,13 @@ def export(
         "--objective",
         help="Research objective to export results for",
     ),
-    location: Optional[str] = typer.Option(
+    location: str | None = typer.Option(
         None,
         "--location",
         "-l",
         help="Target location",
     ),
-    industry: Optional[str] = typer.Option(
+    industry: str | None = typer.Option(
         None,
         "--industry",
         "-i",
@@ -486,11 +496,11 @@ def export(
 
     Run a research job and export qualified leads.
     """
-    from leedhunter.domain.models import SearchIntent, LeadStatus
-    from leedhunter.application.orchestrator import ResearchOrchestrator, ResearchConfig
-    from leedhunter.application.export.exporter import ExportService, ExportFormat, ExportOptions
+    from leedhunter.application.export.exporter import ExportFormat, ExportOptions, ExportService
+    from leedhunter.application.orchestrator import ResearchConfig, ResearchOrchestrator
+    from leedhunter.domain.models import LeadStatus, SearchIntent
 
-    console.print(f"\n[bold blue]Researching and exporting...[/bold blue]\n")
+    console.print("\n[bold blue]Researching and exporting...[/bold blue]\n")
 
     # Create intent
     intent = SearchIntent(
@@ -554,16 +564,17 @@ def export(
         console.print(exported)
 
     # Summary
-    console.print(f"\n[bold]Export Summary:[/bold]")
+    console.print("\n[bold]Export Summary:[/bold]")
     console.print(f"  Leads exported: {len(result.leads)}")
     console.print(f"  Format: {format}")
     if output:
         console.print(f"  Output: {output}")
 
 
-def _get_search_provider(provider_name: Optional[str] = None):
+def _get_search_provider(provider_name: str | None = None):
     """Get search provider by name"""
     import os
+
     from leedhunter.application.search.providers.fixture import FixtureSearchProvider
 
     # Available providers
@@ -575,7 +586,11 @@ def _get_search_provider(provider_name: Optional[str] = None):
     tavily_key = os.environ.get("LEEDHUNTER_SEARCH_TAVILY_API_KEY", "")
     if tavily_key:
         try:
-            from leedhunter.application.search.providers.tavily import TavilySearchProvider, TavilyConfig
+            from leedhunter.application.search.providers.tavily import (
+                TavilyConfig,
+                TavilySearchProvider,
+            )
+
             providers["tavily"] = lambda: TavilySearchProvider(TavilyConfig(api_key=tavily_key))
         except Exception:
             pass
@@ -584,7 +599,11 @@ def _get_search_provider(provider_name: Optional[str] = None):
     brave_key = os.environ.get("LEEDHUNTER_SEARCH_BRAVE_API_KEY", "")
     if brave_key:
         try:
-            from leedhunter.application.search.providers.brave import BraveSearchProvider, BraveConfig
+            from leedhunter.application.search.providers.brave import (
+                BraveConfig,
+                BraveSearchProvider,
+            )
+
             providers["brave"] = lambda: BraveSearchProvider(BraveConfig(api_key=brave_key))
         except Exception:
             pass

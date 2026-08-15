@@ -2,9 +2,6 @@
 Tests for domain services
 """
 
-import pytest
-from datetime import datetime, timezone
-
 from leedhunter.domain.models import (
     Candidate,
     Entity,

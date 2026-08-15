@@ -10,9 +10,9 @@ It discovers:
 """
 
 from leedhunter.application.social.discovery import (
+    PlatformType,
     SocialDiscovery,
     SocialProfile,
-    PlatformType,
 )
 
 __all__ = [

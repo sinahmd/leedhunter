@@ -9,16 +9,11 @@ It generates multiple search queries from a user's prospecting objective.
 
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Optional
 
 from leedhunter.domain.models import SearchIntent
 from leedhunter.domain.search.query import (
-    ExactPhrase,
     Query,
     QueryBuilder,
-    QueryTerm,
-    SiteOperator,
-    Exclusion,
 )
 
 
@@ -52,8 +47,8 @@ class IntentAnalysis:
 
     original_intent: SearchIntent
     concepts: list[Concept] = field(default_factory=list)
-    industry: Optional[str] = None
-    location: Optional[str] = None
+    industry: str | None = None
+    location: str | None = None
     actions: list[str] = field(default_factory=list)
     targets: list[str] = field(default_factory=list)
     platforms: list[str] = field(default_factory=list)
@@ -146,73 +141,87 @@ class IntentAnalyzer:
         industry = self._extract_industry(text)
         if industry:
             analysis.industry = industry
-            analysis.concepts.append(Concept(
-                type=ConceptType.INDUSTRY,
-                value=industry,
-                normalized=industry,
-            ))
+            analysis.concepts.append(
+                Concept(
+                    type=ConceptType.INDUSTRY,
+                    value=industry,
+                    normalized=industry,
+                )
+            )
 
         # Extract location
         location = self._extract_location(text)
         if location:
             analysis.location = location
-            analysis.concepts.append(Concept(
-                type=ConceptType.LOCATION,
-                value=location,
-                normalized=location,
-            ))
+            analysis.concepts.append(
+                Concept(
+                    type=ConceptType.LOCATION,
+                    value=location,
+                    normalized=location,
+                )
+            )
 
         # Extract actions
         actions = self._extract_actions(text)
         analysis.actions = actions
         for action in actions:
-            analysis.concepts.append(Concept(
-                type=ConceptType.ACTION,
-                value=action,
-                normalized=action,
-            ))
+            analysis.concepts.append(
+                Concept(
+                    type=ConceptType.ACTION,
+                    value=action,
+                    normalized=action,
+                )
+            )
 
         # Extract targets
         targets = self._extract_targets(text)
         analysis.targets = targets
         for target in targets:
-            analysis.concepts.append(Concept(
-                type=ConceptType.TARGET,
-                value=target,
-                normalized=target,
-            ))
+            analysis.concepts.append(
+                Concept(
+                    type=ConceptType.TARGET,
+                    value=target,
+                    normalized=target,
+                )
+            )
 
         # Extract platforms
         platforms = self._extract_platforms(text)
         analysis.platforms = platforms
         for platform in platforms:
-            analysis.concepts.append(Concept(
-                type=ConceptType.PLATFORM,
-                value=platform,
-                normalized=platform,
-            ))
+            analysis.concepts.append(
+                Concept(
+                    type=ConceptType.PLATFORM,
+                    value=platform,
+                    normalized=platform,
+                )
+            )
 
         # Use explicit location from intent if not found in text
         if not analysis.location and intent.location:
             analysis.location = intent.location.lower()
-            analysis.concepts.append(Concept(
-                type=ConceptType.LOCATION,
-                value=intent.location,
-                normalized=intent.location,
-            ))
+            analysis.concepts.append(
+                Concept(
+                    type=ConceptType.LOCATION,
+                    value=intent.location,
+                    normalized=intent.location,
+                )
+            )
 
         # Use explicit industry from intent if not found in text
         if not analysis.industry and intent.industry:
             analysis.industry = intent.industry.lower()
-            analysis.concepts.append(Concept(
-                type=ConceptType.INDUSTRY,
-                value=intent.industry,
-                normalized=intent.industry,
-            ))
+            analysis.concepts.append(
+                Concept(
+                    type=ConceptType.INDUSTRY,
+                    value=intent.industry,
+                    normalized=intent.industry,
+                )
+            )
 
         return analysis
 
-    def _extract_industry(self, text: str) -> Optional[str]:
+    def _extract_industry(self, text: str) -> str | None:
         """Extract industry from text"""
         for industry, keywords in self.INDUSTRY_KEYWORDS.items():
             for keyword in keywords:
@@ -220,7 +229,7 @@ class IntentAnalyzer:
                     return industry
         return None
 
-    def _extract_location(self, text: str) -> Optional[str]:
+    def _extract_location(self, text: str) -> str | None:
         """Extract location from text"""
         for location, keywords in self.LOCATION_KEYWORDS.items():
             for keyword in keywords:
@@ -275,15 +284,12 @@ class QueryGenerator:
         "{action} {industry} {location}",
         "{action} {industry} in {location}",
         "{location} {industry} {action}",
-
         # Industry + Location (Persian)
         "{industry} {location}",
         "{industry} در {location}",
-
         # Action + Industry + Platform
         "site:{platform}.com {action} {industry}",
         "site:{platform}.com {industry} {location}",
-
         # Persian variations
         "{action} {industry} {location}",
         "{industry} {action} {location}",
@@ -327,9 +333,9 @@ class QueryGenerator:
 
             # Platform-specific queries
             for platform in platforms:
-                queries.extend(self._generate_platform_queries(
-                    industry, location, action, platform
-                ))
+                queries.extend(
+                    self._generate_platform_queries(industry, location, action, platform)
+                )
 
         # Add constraints as exclusions
         constraints = analysis.original_intent.constraints

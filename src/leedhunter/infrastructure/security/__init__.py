@@ -11,8 +11,8 @@ Critical security rules:
 """
 
 from leedhunter.infrastructure.security.sanitizer import (
-    InputSanitizer,
     CredentialRedactor,
+    InputSanitizer,
 )
 
 __all__ = [

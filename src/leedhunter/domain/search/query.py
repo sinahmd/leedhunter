@@ -10,7 +10,6 @@ Use this structured representation instead.
 
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Optional, Union
 
 from leedhunter.domain.normalization import normalize_text
 
@@ -150,7 +149,7 @@ class Query:
     exact_phrases: list[ExactPhrase] = field(default_factory=list)
     operators: list[Operator] = field(default_factory=list)
     exclusions: list[Exclusion] = field(default_factory=list)
-    provider: Optional[str] = None
+    provider: str | None = None
 
     def to_string(self) -> str:
         """
@@ -204,7 +203,7 @@ class Query:
         """Check if query has a site operator"""
         return any(op.type == OperatorType.SITE for op in self.operators)
 
-    def get_site_domain(self) -> Optional[str]:
+    def get_site_domain(self) -> str | None:
         """Get the domain from site operator"""
         for op in self.operators:
             if op.type == OperatorType.SITE:
@@ -275,7 +274,7 @@ class QueryBuilder:
         self._exact_phrases: list[ExactPhrase] = []
         self._operators: list[Operator] = []
         self._exclusions: list[Exclusion] = []
-        self._provider: Optional[str] = None
+        self._provider: str | None = None
 
     def add_term(self, value: str) -> "QueryBuilder":
         """Add a search term"""

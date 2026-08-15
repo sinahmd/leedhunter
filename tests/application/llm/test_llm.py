@@ -2,25 +2,26 @@
 Tests for LLM abstraction and reforms
 """
 
-import pytest
 import json
 
-from leedhunter.application.llm.provider import LLMProvider, LLMResponse, LLMUsage
+import pytest
+
+from leedhunter.application.llm.arbiter import ArbitrationResult, LLMArbiter
+from leedhunter.application.llm.mock import MockLLMProvider
+from leedhunter.application.llm.parser import (
+    LLMResponseError,
+    LLMResponseParser,
+    ParseStatus,
+)
+from leedhunter.application.llm.provider import LLMResponse, LLMUsage
 from leedhunter.application.llm.schemas import (
-    IntentAnalysisResult,
-    EntityExtractionResult,
     EntityComparisonResult,
+    EntityExtractionResult,
+    IntentAnalysisResult,
     LLMOpportunityItem,
     LLMSignalItem,
     OpportunityIdentificationResult,
 )
-from leedhunter.application.llm.parser import (
-    LLMResponseParser,
-    LLMResponseError,
-    ParseStatus,
-)
-from leedhunter.application.llm.arbiter import LLMArbiter, ArbitrationResult
-from leedhunter.application.llm.mock import MockLLMProvider
 from leedhunter.domain.models import Candidate, Entity
 
 
@@ -80,14 +81,16 @@ class TestLLMResponseParser:
     def test_parse_valid_json(self):
         """Test parsing valid JSON response"""
         response = LLMResponse(
-            content=json.dumps({
-                "industry": "automotive",
-                "location": "mazandaran",
-                "actions": ["import"],
-                "targets": ["companies"],
-                "platforms": ["instagram"],
-                "constraints": [],
-            }),
+            content=json.dumps(
+                {
+                    "industry": "automotive",
+                    "location": "mazandaran",
+                    "actions": ["import"],
+                    "targets": ["companies"],
+                    "platforms": ["instagram"],
+                    "constraints": [],
+                }
+            ),
             success=True,
         )
         result = self.parser.parse(response, IntentAnalysisResult)
@@ -98,14 +101,16 @@ class TestLLMResponseParser:
 
     def test_parse_json_in_code_block(self):
         """Test parsing JSON inside markdown code block"""
-        json_data = json.dumps({
-            "industry": "automotive",
-            "location": None,
-            "actions": [],
-            "targets": [],
-            "platforms": [],
-            "constraints": [],
-        })
+        json_data = json.dumps(
+            {
+                "industry": "automotive",
+                "location": None,
+                "actions": [],
+                "targets": [],
+                "platforms": [],
+                "constraints": [],
+            }
+        )
         response = LLMResponse(
             content=f"```json\n{json_data}\n```",
             success=True,
@@ -129,10 +134,12 @@ class TestLLMResponseParser:
     def test_parse_validation_error(self):
         """Test parsing JSON that fails schema validation"""
         response = LLMResponse(
-            content=json.dumps({
-                "decision": "INVALID_DECISION",
-                "confidence": 0.5,
-            }),
+            content=json.dumps(
+                {
+                    "decision": "INVALID_DECISION",
+                    "confidence": 0.5,
+                }
+            ),
             success=True,
         )
         result = self.parser.parse(response, EntityComparisonResult)
@@ -166,14 +173,16 @@ class TestLLMResponseParser:
     def test_parse_or_raise_success(self):
         """Test parse_or_raise with valid response"""
         response = LLMResponse(
-            content=json.dumps({
-                "industry": "automotive",
-                "location": None,
-                "actions": [],
-                "targets": [],
-                "platforms": [],
-                "constraints": [],
-            }),
+            content=json.dumps(
+                {
+                    "industry": "automotive",
+                    "location": None,
+                    "actions": [],
+                    "targets": [],
+                    "platforms": [],
+                    "constraints": [],
+                }
+            ),
             success=True,
         )
         result = self.parser.parse_or_raise(response, IntentAnalysisResult)
@@ -192,13 +201,15 @@ class TestLLMResponseParser:
     def test_parse_entity_comparison_valid(self):
         """Test parsing valid entity comparison"""
         response = LLMResponse(
-            content=json.dumps({
-                "decision": "SAME",
-                "confidence": 0.9,
-                "reasons": ["Same domain"],
-                "matched_on": ["domain"],
-                "conflicts": [],
-            }),
+            content=json.dumps(
+                {
+                    "decision": "SAME",
+                    "confidence": 0.9,
+                    "reasons": ["Same domain"],
+                    "matched_on": ["domain"],
+                    "conflicts": [],
+                }
+            ),
             success=True,
         )
         result = self.parser.parse(response, EntityComparisonResult)
@@ -210,24 +221,26 @@ class TestLLMResponseParser:
     def test_parse_opportunity_result(self):
         """Test parsing opportunity identification result"""
         response = LLMResponse(
-            content=json.dumps({
-                "opportunities": [
-                    {
-                        "description": "Potential need for digital marketing",
-                        "relevance_score": 0.8,
-                        "evidence_ids": ["ev_1", "ev_2"],
-                    }
-                ],
-                "signals": [
-                    {
-                        "signal_type": "expansion",
-                        "description": "Expanding to new locations",
-                        "confidence": 0.7,
-                        "evidence_ids": ["ev_1"],
-                    }
-                ],
-                "summary": "Business is expanding",
-            }),
+            content=json.dumps(
+                {
+                    "opportunities": [
+                        {
+                            "description": "Potential need for digital marketing",
+                            "relevance_score": 0.8,
+                            "evidence_ids": ["ev_1", "ev_2"],
+                        }
+                    ],
+                    "signals": [
+                        {
+                            "signal_type": "expansion",
+                            "description": "Expanding to new locations",
+                            "confidence": 0.7,
+                            "evidence_ids": ["ev_1"],
+                        }
+                    ],
+                    "summary": "Business is expanding",
+                }
+            ),
             success=True,
         )
         result = self.parser.parse(response, OpportunityIdentificationResult)
@@ -304,13 +317,15 @@ class TestLLMArbiter:
         """Test arbitration with valid LLM response"""
         mock_llm = MockLLMProvider(
             responses={
-                "compare": json.dumps({
-                    "decision": "SAME",
-                    "confidence": 0.9,
-                    "reasons": ["Same domain"],
-                    "matched_on": ["domain"],
-                    "conflicts": [],
-                }),
+                "compare": json.dumps(
+                    {
+                        "decision": "SAME",
+                        "confidence": 0.9,
+                        "reasons": ["Same domain"],
+                        "matched_on": ["domain"],
+                        "conflicts": [],
+                    }
+                ),
             },
         )
         arbiter = LLMArbiter(llm_provider=mock_llm)
@@ -445,14 +460,16 @@ class TestMockLLMProvider:
         """Test intent analysis"""
         provider = MockLLMProvider(
             responses={
-                "automotive": json.dumps({
-                    "industry": "automotive",
-                    "location": "mazandaran",
-                    "actions": ["import"],
-                    "targets": ["companies"],
-                    "platforms": ["instagram"],
-                    "constraints": [],
-                }),
+                "automotive": json.dumps(
+                    {
+                        "industry": "automotive",
+                        "location": "mazandaran",
+                        "actions": ["import"],
+                        "targets": ["companies"],
+                        "platforms": ["instagram"],
+                        "constraints": [],
+                    }
+                ),
             },
         )
         response = await provider.analyze_intent("Find automotive importers in Mazandaran")
@@ -469,14 +486,16 @@ class TestMockLLMProvider:
         """Test entity extraction is evidence-scoped"""
         provider = MockLLMProvider(
             responses={
-                "test business": json.dumps({
-                    "names": ["Test Business"],
-                    "domains": ["test.com"],
-                    "phones": ["+98 912 123 4567"],
-                    "emails": ["info@test.com"],
-                    "usernames": [{"platform": "instagram", "username": "test_biz"}],
-                    "locations": ["Tehran"],
-                }),
+                "test business": json.dumps(
+                    {
+                        "names": ["Test Business"],
+                        "domains": ["test.com"],
+                        "phones": ["+98 912 123 4567"],
+                        "emails": ["info@test.com"],
+                        "usernames": [{"platform": "instagram", "username": "test_biz"}],
+                        "locations": ["Tehran"],
+                    }
+                ),
             },
         )
         response = await provider.extract_entities(
@@ -493,13 +512,15 @@ class TestMockLLMProvider:
         """Test entity comparison"""
         provider = MockLLMProvider(
             responses={
-                "compare": json.dumps({
-                    "decision": "SAME",
-                    "confidence": 0.9,
-                    "reasons": ["Same domain"],
-                    "matched_on": ["domain"],
-                    "conflicts": [],
-                }),
+                "compare": json.dumps(
+                    {
+                        "decision": "SAME",
+                        "confidence": 0.9,
+                        "reasons": ["Same domain"],
+                        "matched_on": ["domain"],
+                        "conflicts": [],
+                    }
+                ),
             },
         )
         response = await provider.compare_entities(
@@ -528,13 +549,15 @@ class TestMockLLMProvider:
         """Test the full validation boundary: response → parse → typed result"""
         provider = MockLLMProvider(
             responses={
-                "compare": json.dumps({
-                    "decision": "AMBIGUOUS",
-                    "confidence": 0.5,
-                    "reasons": ["Similar names but different phones"],
-                    "matched_on": ["name_similarity"],
-                    "conflicts": ["different_phones"],
-                }),
+                "compare": json.dumps(
+                    {
+                        "decision": "AMBIGUOUS",
+                        "confidence": 0.5,
+                        "reasons": ["Similar names but different phones"],
+                        "matched_on": ["name_similarity"],
+                        "conflicts": ["different_phones"],
+                    }
+                ),
             },
         )
         parser = LLMResponseParser()

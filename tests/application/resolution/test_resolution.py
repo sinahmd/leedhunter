@@ -3,17 +3,16 @@ Tests for entity resolution
 """
 
 import pytest
-from datetime import datetime, timezone
 
+from leedhunter.application.resolution.matchers import (
+    DeterministicMatcher,
+    ExactMatcher,
+    FuzzyMatcher,
+    MatchDecision,
+)
 from leedhunter.application.resolution.orchestrator import (
     EntityResolutionOrchestrator,
     ResolutionDecision,
-)
-from leedhunter.application.resolution.matchers import (
-    ExactMatcher,
-    DeterministicMatcher,
-    FuzzyMatcher,
-    MatchDecision,
 )
 from leedhunter.domain.models import (
     Candidate,
@@ -266,7 +265,9 @@ class TestEntityResolutionOrchestrator:
     def test_resolve_batch(self):
         """Test resolving batch of candidates"""
         candidates = [
-            Candidate(source="test", source_url="https://example.com", observed_domain="example.com"),
+            Candidate(
+                source="test", source_url="https://example.com", observed_domain="example.com"
+            ),
             Candidate(source="test", source_url="https://new.com", observed_domain="new.com"),
         ]
         entity = create_entity("Example", domain="example.com")
@@ -304,7 +305,7 @@ class TestEntityResolutionOrchestrator:
         if not eval_path.exists():
             pytest.skip("Evaluation dataset not found")
 
-        with open(eval_path, "r", encoding="utf-8") as f:
+        with open(eval_path, encoding="utf-8") as f:
             pairs = json.load(f)
 
         correct = 0
@@ -344,7 +345,7 @@ class TestEntityResolutionOrchestrator:
         # Log results
         if total > 0:
             accuracy = correct / total
-            print(f"\nEvaluation Results:")
+            print("\nEvaluation Results:")
             print(f"  Total pairs: {total}")
             print(f"  Correct: {correct}")
             print(f"  Accuracy: {accuracy:.2%}")

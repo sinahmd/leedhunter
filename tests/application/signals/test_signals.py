@@ -2,16 +2,14 @@
 Tests for signal detection
 """
 
-import pytest
-
 from leedhunter.application.signals.detector import (
     SignalDetector,
     SignalRule,
 )
 from leedhunter.domain.models import (
-    Evidence,
     EntityIdentity,
     EntityIdentityType,
+    Evidence,
     Signal,
     SignalType,
 )

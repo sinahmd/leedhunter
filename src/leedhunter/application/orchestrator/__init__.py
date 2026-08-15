@@ -6,9 +6,9 @@ Search → Pipeline → Resolution → Evidence → Signals → Opportunities �
 """
 
 from leedhunter.application.orchestrator.research import (
+    ResearchConfig,
     ResearchOrchestrator,
     ResearchResult,
-    ResearchConfig,
 )
 
 __all__ = [

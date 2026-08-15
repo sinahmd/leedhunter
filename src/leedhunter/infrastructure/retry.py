@@ -6,8 +6,9 @@ This module provides retry logic for flaky external services.
 
 import asyncio
 import random
+from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Any, Callable, Optional, TypeVar
+from typing import Any, TypeVar
 
 from leedhunter.infrastructure.errors import (
     InfrastructureError,
@@ -50,15 +51,13 @@ def is_retryable(error: Exception) -> bool:
         return True
     if isinstance(error, ProviderError) and error.retryable:
         return True
-    if isinstance(error, RetryableError):
-        return True
-    return False
+    return bool(isinstance(error, RetryableError))
 
 
 def calculate_delay(
     attempt: int,
     config: RetryConfig,
-    retry_after: Optional[float] = None,
+    retry_after: float | None = None,
 ) -> float:
     """
     Calculate delay for retry attempt
@@ -76,7 +75,7 @@ def calculate_delay(
         return min(retry_after, config.max_delay)
 
     # Calculate exponential backoff
-    delay = config.base_delay * (config.exponential_base ** attempt)
+    delay = config.base_delay * (config.exponential_base**attempt)
 
     # Apply jitter to prevent thundering herd
     if config.jitter:
@@ -89,7 +88,7 @@ def calculate_delay(
 async def retry_async(
     func: Callable[..., Any],
     *args: Any,
-    config: Optional[RetryConfig] = None,
+    config: RetryConfig | None = None,
     **kwargs: Any,
 ) -> Any:
     """
@@ -139,7 +138,7 @@ async def retry_async(
 def retry_sync(
     func: Callable[..., Any],
     *args: Any,
-    config: Optional[RetryConfig] = None,
+    config: RetryConfig | None = None,
     **kwargs: Any,
 ) -> Any:
     """

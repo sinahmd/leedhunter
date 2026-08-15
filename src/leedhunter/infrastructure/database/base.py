@@ -4,7 +4,7 @@ Database base configuration
 Provides SQLAlchemy engine, session factory, and declarative base.
 """
 
-from typing import AsyncGenerator
+from collections.abc import AsyncGenerator
 
 from sqlalchemy.ext.asyncio import (
     AsyncSession,

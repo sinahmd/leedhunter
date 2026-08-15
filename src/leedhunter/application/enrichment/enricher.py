@@ -12,9 +12,8 @@ Enrichment extracts:
 """
 
 from dataclasses import dataclass, field
-from typing import Optional
 
-from leedhunter.domain.models import EntityIdentity, EntityIdentityType
+from leedhunter.domain.models import EntityIdentity
 
 
 @dataclass
@@ -39,7 +38,7 @@ class EnrichmentResult:
     source_url: str
     enriched_data: EnrichedData
     success: bool = True
-    error_message: Optional[str] = None
+    error_message: str | None = None
     new_identities: list[EntityIdentity] = field(default_factory=list)
 
 
@@ -97,12 +96,12 @@ class EnrichmentService:
         }
 
         # Extract emails
-        email_pattern = r'[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}'
+        email_pattern = r"[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}"
         emails = re.findall(email_pattern, text)
         result["emails"] = list(set(emails))
 
         # Extract phone numbers (basic pattern)
-        phone_pattern = r'[\+]?[(]?[0-9]{1,4}[)]?[-\s\./0-9]{7,}'
+        phone_pattern = r"[\+]?[(]?[0-9]{1,4}[)]?[-\s\./0-9]{7,}"
         phones = re.findall(phone_pattern, text)
         result["phones"] = list(set(phones))
 
@@ -126,13 +125,13 @@ class EnrichmentService:
         social_links = {}
 
         # Instagram
-        instagram_pattern = r'(?:https?://)?(?:www\.)?instagram\.com/([a-zA-Z0-9_\.]+)/?'
+        instagram_pattern = r"(?:https?://)?(?:www\.)?instagram\.com/([a-zA-Z0-9_\.]+)/?"
         instagram_match = re.search(instagram_pattern, text)
         if instagram_match:
             social_links["instagram"] = f"https://instagram.com/{instagram_match.group(1)}"
 
         # LinkedIn
-        linkedin_pattern = r'(?:https?://)?(?:www\.)?linkedin\.com/(?:in|company)/([a-zA-Z0-9-]+)/?'
+        linkedin_pattern = r"(?:https?://)?(?:www\.)?linkedin\.com/(?:in|company)/([a-zA-Z0-9-]+)/?"
         linkedin_match = re.search(linkedin_pattern, text)
         if linkedin_match:
             social_links["linkedin"] = f"https://linkedin.com/in/{linkedin_match.group(1)}"

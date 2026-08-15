@@ -2,8 +2,6 @@
 Tests for opportunity engine
 """
 
-import pytest
-
 from leedhunter.application.opportunities.engine import (
     OpportunityEngine,
     OpportunityRule,
@@ -64,7 +62,10 @@ class TestOpportunityEngine:
         opportunities = self.engine.identify("entity_1", [signal])
 
         assert len(opportunities) == 1
-        assert "digital" in opportunities[0].description.lower() or "partnership" in opportunities[0].description.lower()
+        assert (
+            "digital" in opportunities[0].description.lower()
+            or "partnership" in opportunities[0].description.lower()
+        )
 
     def test_identify_from_multiple_signals(self):
         """Test identifying opportunities from multiple signals"""

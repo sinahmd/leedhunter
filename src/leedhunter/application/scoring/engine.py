@@ -17,7 +17,6 @@ from dataclasses import dataclass, field
 
 from leedhunter.domain.models import (
     Entity,
-    EntityIdentity,
     EntityIdentityType,
     Opportunity,
     Signal,
@@ -68,7 +67,9 @@ class ScoringEngine:
         signal_score = self._calculate_signals(signals)
         contactability_score = self._calculate_contactability(entity)
 
-        total_score = min(100.0, icp_score + opportunity_score + signal_score + contactability_score)
+        total_score = min(
+            100.0, icp_score + opportunity_score + signal_score + contactability_score
+        )
 
         # Generate recommendations
         recommendations = self._generate_recommendations(
@@ -111,9 +112,7 @@ class ScoringEngine:
             score += 8.0
 
         # Has website
-        has_website = any(
-            i.type == EntityIdentityType.WEBSITE for i in entity.identities
-        )
+        has_website = any(i.type == EntityIdentityType.WEBSITE for i in entity.identities)
         if has_website:
             score += 5.0
 

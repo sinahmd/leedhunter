@@ -4,13 +4,12 @@ Tests for export functionality
 
 import csv
 import json
-import pytest
 from io import StringIO
 
 from leedhunter.application.export.exporter import (
-    ExportService,
     ExportFormat,
     ExportOptions,
+    ExportService,
 )
 from leedhunter.domain.models import (
     Entity,

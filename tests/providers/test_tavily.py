@@ -5,14 +5,13 @@ These tests use MockTavilySearchProvider to avoid requiring a real API key.
 """
 
 import pytest
-from pathlib import Path
 
 from leedhunter.application.search.providers.tavily import (
-    TavilySearchProvider,
-    TavilyConfig,
     MockTavilySearchProvider,
+    TavilyConfig,
+    TavilySearchProvider,
 )
-from leedhunter.domain.search.query import Query, QueryBuilder
+from leedhunter.domain.search.query import QueryBuilder
 
 
 class TestTavilyConfig:
@@ -199,6 +198,7 @@ class TestTavilyProviderContract:
         result = await provider.search(query)
 
         from leedhunter.application.search.provider import SearchResult
+
         assert isinstance(result, SearchResult)
         assert result.provider == "tavily"
         assert isinstance(result.candidates, list)
@@ -217,6 +217,7 @@ class TestTavilyProviderContract:
         health = await provider.get_health()
 
         from leedhunter.application.search.provider import ProviderHealth
+
         assert isinstance(health, ProviderHealth)
 
 

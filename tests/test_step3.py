@@ -8,29 +8,27 @@ Tests for:
 - Partial result reporting
 """
 
-import pytest
-import asyncio
-from unittest.mock import AsyncMock, MagicMock
+from unittest.mock import AsyncMock
 
-from leedhunter.domain.search.query import Query, QueryBuilder, QueryTerm
-from leedhunter.infrastructure.retry import (
-    RetryConfig,
-    retry_async,
-    is_retryable,
-    calculate_delay,
-    RetryableError,
-)
-from leedhunter.infrastructure.errors import (
-    NetworkError,
-    RateLimitError,
-    ProviderError,
-)
+import pytest
+
 from leedhunter.application.orchestrator.research import (
-    ResearchOrchestrator,
     ResearchResult,
-    ResearchConfig,
 )
 from leedhunter.domain.models import SearchIntent
+from leedhunter.domain.search.query import Query, QueryBuilder
+from leedhunter.infrastructure.errors import (
+    NetworkError,
+    ProviderError,
+    RateLimitError,
+)
+from leedhunter.infrastructure.retry import (
+    RetryableError,
+    RetryConfig,
+    calculate_delay,
+    is_retryable,
+    retry_async,
+)
 
 
 class TestUnifiedQueryModel:
@@ -38,12 +36,7 @@ class TestUnifiedQueryModel:
 
     def test_query_from_builder(self):
         """Test creating Query from builder"""
-        query = (
-            QueryBuilder()
-            .add_term("test")
-            .add_site("example.com")
-            .build()
-        )
+        query = QueryBuilder().add_term("test").add_site("example.com").build()
 
         assert isinstance(query, Query)
         assert len(query.terms) == 1
@@ -51,12 +44,7 @@ class TestUnifiedQueryModel:
 
     def test_query_to_string(self):
         """Test Query.to_string()"""
-        query = (
-            QueryBuilder()
-            .add_term("import")
-            .add_site("instagram.com")
-            .build()
-        )
+        query = QueryBuilder().add_term("import").add_site("instagram.com").build()
 
         query_str = query.to_string()
         assert "site:instagram.com" in query_str
@@ -138,9 +126,7 @@ class TestRetryLogic:
     @pytest.mark.asyncio
     async def test_retry_async_retries_on_failure(self):
         """Test retry retries on retryable failure"""
-        mock_func = AsyncMock(
-            side_effect=[NetworkError("fail"), NetworkError("fail"), "success"]
-        )
+        mock_func = AsyncMock(side_effect=[NetworkError("fail"), NetworkError("fail"), "success"])
         config = RetryConfig(max_retries=3, base_delay=0.01)
 
         result = await retry_async(mock_func, config=config)
@@ -151,9 +137,7 @@ class TestRetryLogic:
     @pytest.mark.asyncio
     async def test_retry_async_raises_non_retryable(self):
         """Test retry raises non-retryable errors immediately"""
-        mock_func = AsyncMock(
-            side_effect=ProviderError("test", "auth failed", retryable=False)
-        )
+        mock_func = AsyncMock(side_effect=ProviderError("test", "auth failed", retryable=False))
 
         with pytest.raises(ProviderError):
             await retry_async(mock_func)

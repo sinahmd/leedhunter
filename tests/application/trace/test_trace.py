@@ -2,13 +2,11 @@
 Tests for research trace
 """
 
-import pytest
-
 from leedhunter.application.trace.tracer import (
+    ResearchTrace,
     ResearchTracer,
     TraceEvent,
     TraceEventType,
-    ResearchTrace,
 )
 
 

@@ -6,7 +6,6 @@ Configuration can be provided via environment variables or .env file.
 """
 
 from enum import Enum
-from typing import Optional
 
 from pydantic import Field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -45,7 +44,9 @@ class DatabaseSettings(BaseSettings):
     @property
     def url(self) -> str:
         """Get the database connection URL"""
-        return f"postgresql+asyncpg://{self.user}:{self.password}@{self.host}:{self.port}/{self.name}"
+        return (
+            f"postgresql+asyncpg://{self.user}:{self.password}@{self.host}:{self.port}/{self.name}"
+        )
 
     @property
     def sync_url(self) -> str:
@@ -60,7 +61,7 @@ class RedisSettings(BaseSettings):
 
     host: str = Field(default="localhost", description="Redis host")
     port: int = Field(default=6379, description="Redis port")
-    password: Optional[str] = Field(default=None, description="Redis password")
+    password: str | None = Field(default=None, description="Redis password")
     db: int = Field(default=0, description="Redis database number")
 
     @property
@@ -82,13 +83,17 @@ class LLMSettings(BaseSettings):
         description="LLM provider to use",
     )
     api_key: str = Field(default="", description="API key for the LLM provider")
-    base_url: Optional[str] = Field(default=None, description="Base URL for API (for OpenAI-compatible)")
+    base_url: str | None = Field(
+        default=None, description="Base URL for API (for OpenAI-compatible)"
+    )
     model: str = Field(default="claude-3-sonnet-20240229", description="Model to use")
     max_tokens: int = Field(default=4096, description="Maximum tokens for responses")
     temperature: float = Field(default=0.2, description="Temperature for generation")
     timeout_seconds: float = Field(default=60.0, description="Request timeout in seconds")
     max_calls_per_research: int = Field(default=10, description="Max LLM calls per research job")
-    max_cost_per_research: Optional[float] = Field(default=None, description="Max cost per research job")
+    max_cost_per_research: float | None = Field(
+        default=None, description="Max cost per research job"
+    )
 
     @field_validator("api_key")
     @classmethod
@@ -199,7 +204,7 @@ class Settings(BaseSettings):
 
 
 # Global settings instance
-_settings: Optional[Settings] = None
+_settings: Settings | None = None
 
 
 def get_settings() -> Settings:

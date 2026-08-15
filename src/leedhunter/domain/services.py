@@ -5,18 +5,13 @@ These services implement core business logic that doesn't belong in the models.
 They are pure domain logic with no infrastructure dependencies.
 """
 
-from typing import Optional
 from leedhunter.domain.models import (
     Candidate,
     Entity,
-    EntityIdentity,
     EntityIdentityType,
     Lead,
     LeadStatus,
-    Opportunity,
-    Signal,
     SignalType,
-    _utcnow,
 )
 
 
@@ -35,7 +30,7 @@ class EntityResolutionService:
         self,
         candidate: Candidate,
         existing_entities: list[Entity],
-    ) -> tuple[str, Optional[Entity]]:
+    ) -> tuple[str, Entity | None]:
         """
         Resolve a candidate against existing entities
 
@@ -73,7 +68,7 @@ class EntityResolutionService:
         self,
         candidate: Candidate,
         existing_entities: list[Entity],
-    ) -> Optional[Entity]:
+    ) -> Entity | None:
         """
         Exact matching based on identifiers
 
@@ -124,7 +119,7 @@ class EntityResolutionService:
         self,
         candidate: Candidate,
         existing_entities: list[Entity],
-    ) -> Optional[Entity]:
+    ) -> Entity | None:
         """
         Deterministic matching based on normalized identifiers
 
@@ -146,7 +141,7 @@ class EntityResolutionService:
         self,
         candidate: Candidate,
         existing_entities: list[Entity],
-    ) -> Optional[Entity]:
+    ) -> Entity | None:
         """
         Fuzzy matching based on name similarity
 
@@ -204,8 +199,8 @@ class EntityResolutionService:
             return 1.0
 
         # Simple Jaccard similarity on character bigrams
-        bigrams1 = set(name1[i:i+2] for i in range(len(name1) - 1))
-        bigrams2 = set(name2[i:i+2] for i in range(len(name2) - 1))
+        bigrams1 = set(name1[i : i + 2] for i in range(len(name1) - 1))
+        bigrams2 = set(name2[i : i + 2] for i in range(len(name2) - 1))
 
         if not bigrams1 or not bigrams2:
             return 0.0
@@ -243,7 +238,9 @@ class EntityResolutionService:
         if candidate.observed_domain and entity.canonical_domain:
             if candidate.observed_domain.lower() == entity.canonical_domain.lower():
                 matched.append("exact domain")
-            elif self._normalize_domain(candidate.observed_domain) == self._normalize_domain(entity.canonical_domain):
+            elif self._normalize_domain(candidate.observed_domain) == self._normalize_domain(
+                entity.canonical_domain
+            ):
                 matched.append("normalized domain")
 
         if candidate.observed_email:
@@ -264,7 +261,8 @@ class EntityResolutionService:
             for identity in entity.identities:
                 if (
                     identity.type == EntityIdentityType.PHONE
-                    and self._normalize_phone(identity.normalized_value) == normalized_candidate_phone
+                    and self._normalize_phone(identity.normalized_value)
+                    == normalized_candidate_phone
                 ):
                     matched.append("same phone")
 
@@ -327,10 +325,7 @@ class ScoringService:
             score += 10.0
 
         # Business type indicators
-        if any(
-            identity.type == EntityIdentityType.WEBSITE
-            for identity in lead.entity.identities
-        ):
+        if any(identity.type == EntityIdentityType.WEBSITE for identity in lead.entity.identities):
             score += 5.0
 
         return min(25.0, score)
@@ -389,13 +384,15 @@ class ScoringService:
         score = 0.0
 
         for identity in lead.entity.identities:
-            if identity.type == EntityIdentityType.PHONE:
+            if (
+                identity.type == EntityIdentityType.PHONE
+                or identity.type == EntityIdentityType.EMAIL
+            ):
                 score += 10.0
-            elif identity.type == EntityIdentityType.EMAIL:
-                score += 10.0
-            elif identity.type == EntityIdentityType.INSTAGRAM:
-                score += 3.0
-            elif identity.type == EntityIdentityType.LINKEDIN:
+            elif (
+                identity.type == EntityIdentityType.INSTAGRAM
+                or identity.type == EntityIdentityType.LINKEDIN
+            ):
                 score += 3.0
 
         return min(25.0, score)

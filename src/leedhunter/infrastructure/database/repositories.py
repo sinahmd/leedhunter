@@ -7,9 +7,8 @@ data access for domain entities.
 
 import json
 from datetime import datetime, timezone
-from typing import Optional
 
-from sqlalchemy import select, update, delete
+from sqlalchemy import delete, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
@@ -20,23 +19,21 @@ from leedhunter.domain.models import (
     Evidence,
     Lead,
     LeadStatus,
-    Opportunity,
     Signal,
     SignalType,
 )
 from leedhunter.domain.normalization import (
-    normalize_text,
     normalize_domain,
-    normalize_phone,
     normalize_email,
+    normalize_phone,
+    normalize_text,
     normalize_username,
 )
 from leedhunter.infrastructure.database.models import (
-    EntityModel,
     EntityIdentityModel,
+    EntityModel,
     EvidenceModel,
     LeadModel,
-    OpportunityModel,
     SignalModel,
 )
 
@@ -51,7 +48,9 @@ class EntityRepository:
         """Save an entity and return it with ID"""
         # Normalize Persian/Arabic text
         canonical_name_normalized = normalize_text(entity.canonical_name)
-        canonical_domain_normalized = normalize_domain(entity.canonical_domain) if entity.canonical_domain else None
+        canonical_domain_normalized = (
+            normalize_domain(entity.canonical_domain) if entity.canonical_domain else None
+        )
 
         # Check if entity exists
         if entity.id:
@@ -95,7 +94,7 @@ class EntityRepository:
         entity.id = str(model.id)
         return entity
 
-    async def get_by_id(self, entity_id: str) -> Optional[Entity]:
+    async def get_by_id(self, entity_id: str) -> Entity | None:
         """Get entity by ID"""
         result = await self.session.execute(
             select(EntityModel)
@@ -113,7 +112,7 @@ class EntityRepository:
             return None
         return self._to_domain(model)
 
-    async def get_by_domain(self, domain: str) -> Optional[Entity]:
+    async def get_by_domain(self, domain: str) -> Entity | None:
         """Get entity by canonical domain"""
         result = await self.session.execute(
             select(EntityModel)
@@ -135,7 +134,7 @@ class EntityRepository:
         self,
         identity_type: str,
         normalized_value: str,
-    ) -> Optional[Entity]:
+    ) -> Entity | None:
         """Get entity by identity"""
         result = await self.session.execute(
             select(EntityModel)
@@ -281,7 +280,7 @@ class EvidenceRepository:
         models = result.scalars().all()
         return [self._to_domain(model) for model in models]
 
-    async def get_by_id(self, evidence_id: str) -> Optional[Evidence]:
+    async def get_by_id(self, evidence_id: str) -> Evidence | None:
         """Get evidence by ID"""
         result = await self.session.execute(
             select(EvidenceModel).where(EvidenceModel.id == int(evidence_id))
@@ -339,13 +338,12 @@ class SignalRepository:
     async def get_by_entity_id(self, entity_id: str) -> list[Signal]:
         """Get all signals for an entity"""
         result = await self.session.execute(
-            select(SignalModel)
-            .where(SignalModel.entity_id == int(entity_id))
+            select(SignalModel).where(SignalModel.entity_id == int(entity_id))
         )
         models = result.scalars().all()
         return [self._to_domain(model) for model in models]
 
-    async def get_by_id(self, signal_id: str) -> Optional[Signal]:
+    async def get_by_id(self, signal_id: str) -> Signal | None:
         """Get signal by ID"""
         result = await self.session.execute(
             select(SignalModel).where(SignalModel.id == int(signal_id))
@@ -410,7 +408,7 @@ class LeadRepository:
         await self.session.flush()
         return lead
 
-    async def get_by_entity_id(self, entity_id: str) -> Optional[Lead]:
+    async def get_by_entity_id(self, entity_id: str) -> Lead | None:
         """Get lead by entity ID"""
         result = await self.session.execute(
             select(LeadModel)
@@ -422,7 +420,7 @@ class LeadRepository:
             return None
         return self._to_domain(model)
 
-    async def get_by_id(self, lead_id: str) -> Optional[Lead]:
+    async def get_by_id(self, lead_id: str) -> Lead | None:
         """Get lead by ID"""
         result = await self.session.execute(
             select(LeadModel)
@@ -436,8 +434,8 @@ class LeadRepository:
 
     async def get_all(
         self,
-        status: Optional[str] = None,
-        min_score: Optional[float] = None,
+        status: str | None = None,
+        min_score: float | None = None,
         limit: int = 100,
         offset: int = 0,
     ) -> list[Lead]:
@@ -459,17 +457,13 @@ class LeadRepository:
 
     async def delete(self, lead_id: str) -> bool:
         """Delete lead by ID"""
-        result = await self.session.execute(
-            delete(LeadModel).where(LeadModel.id == int(lead_id))
-        )
+        result = await self.session.execute(delete(LeadModel).where(LeadModel.id == int(lead_id)))
         return result.rowcount > 0
 
     def _to_domain(self, model: LeadModel) -> Lead:
         """Convert ORM model to domain model"""
         qualification_reasons = (
-            json.loads(model.qualification_reasons_json)
-            if model.qualification_reasons_json
-            else []
+            json.loads(model.qualification_reasons_json) if model.qualification_reasons_json else []
         )
 
         # Convert entity

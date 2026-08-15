@@ -2,19 +2,17 @@
 Tests for search query module
 """
 
-import pytest
-
 from leedhunter.domain.search.query import (
-    Query,
-    QueryTerm,
     ExactPhrase,
-    Operator,
-    OperatorType,
-    SiteOperator,
+    Exclusion,
     IntitleOperator,
     InurlOperator,
-    Exclusion,
+    Operator,
+    OperatorType,
+    Query,
     QueryBuilder,
+    QueryTerm,
+    SiteOperator,
 )
 
 
@@ -115,34 +113,26 @@ class TestQuery:
 
     def test_create_query_with_terms(self):
         """Test creating a query with terms"""
-        query = Query(
-            terms=[QueryTerm(value="import"), QueryTerm(value="cars")]
-        )
+        query = Query(terms=[QueryTerm(value="import"), QueryTerm(value="cars")])
         assert not query.is_empty()
         assert "import" in query.to_string()
         assert "cars" in query.to_string()
 
     def test_create_query_with_phrases(self):
         """Test creating a query with exact phrases"""
-        query = Query(
-            exact_phrases=[ExactPhrase(value="واردات خودرو")]
-        )
+        query = Query(exact_phrases=[ExactPhrase(value="واردات خودرو")])
         assert not query.is_empty()
         assert '"واردات خودرو"' in query.to_string()
 
     def test_create_query_with_operators(self):
         """Test creating a query with operators"""
-        query = Query(
-            operators=[SiteOperator(domain="instagram.com")]
-        )
+        query = Query(operators=[SiteOperator(domain="instagram.com")])
         assert not query.is_empty()
         assert "site:instagram.com" in query.to_string()
 
     def test_create_query_with_exclusions(self):
         """Test creating a query with exclusions"""
-        query = Query(
-            exclusions=[Exclusion(value="used")]
-        )
+        query = Query(exclusions=[Exclusion(value="used")])
         assert not query.is_empty()
         assert "-used" in query.to_string()
 
@@ -326,9 +316,7 @@ class TestQueryBuilder:
 
     def test_from_string_complex(self):
         """Test parsing complex query string"""
-        query = QueryBuilder.from_string(
-            'site:instagram.com "واردات خودرو" import -used'
-        )
+        query = QueryBuilder.from_string('site:instagram.com "واردات خودرو" import -used')
         assert query.has_site_operator()
         assert len(query.exact_phrases) == 1
         assert len(query.terms) == 1

@@ -15,9 +15,8 @@ But preserve all discovery provenance.
 """
 
 from dataclasses import dataclass, field
-from typing import Optional
 
-from leedhunter.application.pipeline.extractor import ExtractedCandidate, ExtractedIdentity
+from leedhunter.application.pipeline.extractor import ExtractedCandidate
 from leedhunter.domain.models import EntityIdentityType
 from leedhunter.domain.normalization import normalize_domain, normalize_phone
 
@@ -128,7 +127,7 @@ class CandidateDeduplicator:
 
         return result
 
-    def _get_domain(self, candidate: ExtractedCandidate) -> Optional[str]:
+    def _get_domain(self, candidate: ExtractedCandidate) -> str | None:
         """Get domain from candidate"""
         # Check identities
         for identity in candidate.identities:
@@ -137,21 +136,21 @@ class CandidateDeduplicator:
         # Check candidate
         return candidate.candidate.observed_domain
 
-    def _get_email(self, candidate: ExtractedCandidate) -> Optional[str]:
+    def _get_email(self, candidate: ExtractedCandidate) -> str | None:
         """Get email from candidate"""
         for identity in candidate.identities:
             if identity.type == EntityIdentityType.EMAIL:
                 return identity.value
         return candidate.candidate.observed_email
 
-    def _get_phone(self, candidate: ExtractedCandidate) -> Optional[str]:
+    def _get_phone(self, candidate: ExtractedCandidate) -> str | None:
         """Get phone from candidate"""
         for identity in candidate.identities:
             if identity.type == EntityIdentityType.PHONE:
                 return identity.value
         return candidate.candidate.observed_phone
 
-    def _get_username(self, candidate: ExtractedCandidate) -> Optional[tuple[str, str]]:
+    def _get_username(self, candidate: ExtractedCandidate) -> tuple[str, str] | None:
         """Get username and platform from candidate"""
         for identity in candidate.identities:
             if identity.type in [EntityIdentityType.INSTAGRAM, EntityIdentityType.LINKEDIN]:

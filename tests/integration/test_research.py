@@ -4,13 +4,12 @@ Integration tests for research orchestrator
 
 import pytest
 
-from leedhunter.domain.models import SearchIntent
 from leedhunter.application.orchestrator import (
-    ResearchOrchestrator,
-    ResearchResult,
     ResearchConfig,
+    ResearchOrchestrator,
 )
 from leedhunter.application.search.providers.fixture import FixtureSearchProvider
+from leedhunter.domain.models import SearchIntent
 
 
 class TestResearchOrchestrator:

@@ -4,9 +4,8 @@ Social Discovery
 This module discovers and links social media profiles for business entities.
 """
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from enum import Enum
-from typing import Optional
 
 from leedhunter.domain.models import EntityIdentity, EntityIdentityType
 from leedhunter.domain.normalization import normalize_username
@@ -30,9 +29,9 @@ class SocialProfile:
     username: str
     normalized_username: str
     url: str
-    display_name: Optional[str] = None
-    bio: Optional[str] = None
-    followers: Optional[int] = None
+    display_name: str | None = None
+    bio: str | None = None
+    followers: int | None = None
     is_business: bool = False
     confidence: float = 1.0
 
@@ -64,7 +63,7 @@ class SocialDiscovery:
         self,
         username: str,
         platform: PlatformType,
-    ) -> Optional[SocialProfile]:
+    ) -> SocialProfile | None:
         """
         Discover a social profile from a username
 
@@ -99,7 +98,7 @@ class SocialDiscovery:
     def discover_from_entity_name(
         self,
         name: str,
-        platforms: Optional[list[PlatformType]] = None,
+        platforms: list[PlatformType] | None = None,
     ) -> list[SocialProfile]:
         """
         Discover social profiles from entity name

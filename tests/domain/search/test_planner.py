@@ -2,8 +2,6 @@
 Tests for search planner module
 """
 
-import pytest
-
 from leedhunter.domain.models import SearchIntent
 from leedhunter.domain.search.planner import (
     Concept,

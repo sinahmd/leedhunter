@@ -6,20 +6,15 @@ This module exports leads and results in JSON and CSV formats.
 
 import csv
 import json
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from enum import Enum
 from io import StringIO
-from typing import Any, Optional
 
 from leedhunter.domain.models import (
     Entity,
-    EntityIdentity,
     EntityIdentityType,
-    Evidence,
     Lead,
     LeadStatus,
-    Opportunity,
-    Signal,
 )
 
 
@@ -38,9 +33,9 @@ class ExportOptions:
     include_evidence: bool = False
     include_signals: bool = False
     include_opportunities: bool = False
-    status_filter: Optional[LeadStatus] = None
-    min_score: Optional[float] = None
-    fields: Optional[list[str]] = None
+    status_filter: LeadStatus | None = None
+    min_score: float | None = None
+    fields: list[str] | None = None
 
 
 class ExportService:
@@ -111,10 +106,10 @@ class ExportService:
         filtered = leads
 
         if options.status_filter:
-            filtered = [l for l in filtered if l.status == options.status_filter]
+            filtered = [lead for lead in filtered if lead.status == options.status_filter]
 
         if options.min_score is not None:
-            filtered = [l for l in filtered if l.score >= options.min_score]
+            filtered = [lead for lead in filtered if lead.score >= options.min_score]
 
         return filtered
 
@@ -209,17 +204,19 @@ class ExportService:
             instagram = self._get_identity_value(lead.entity, EntityIdentityType.INSTAGRAM)
             linkedin = self._get_identity_value(lead.entity, EntityIdentityType.LINKEDIN)
 
-            writer.writerow([
-                lead.entity.id,
-                lead.entity.canonical_name,
-                lead.entity.canonical_domain or "",
-                f"{lead.score:.1f}",
-                lead.status.value,
-                phone or "",
-                email or "",
-                instagram or "",
-                linkedin or "",
-            ])
+            writer.writerow(
+                [
+                    lead.entity.id,
+                    lead.entity.canonical_name,
+                    lead.entity.canonical_domain or "",
+                    f"{lead.score:.1f}",
+                    lead.status.value,
+                    phone or "",
+                    email or "",
+                    instagram or "",
+                    linkedin or "",
+                ]
+            )
 
         return output.getvalue()
 
@@ -276,15 +273,17 @@ class ExportService:
             instagram = self._get_identity_value(entity, EntityIdentityType.INSTAGRAM)
             linkedin = self._get_identity_value(entity, EntityIdentityType.LINKEDIN)
 
-            writer.writerow([
-                entity.id,
-                entity.canonical_name,
-                entity.canonical_domain or "",
-                phone or "",
-                email or "",
-                instagram or "",
-                linkedin or "",
-            ])
+            writer.writerow(
+                [
+                    entity.id,
+                    entity.canonical_name,
+                    entity.canonical_domain or "",
+                    phone or "",
+                    email or "",
+                    instagram or "",
+                    linkedin or "",
+                ]
+            )
 
         return output.getvalue()
 
@@ -292,7 +291,7 @@ class ExportService:
         self,
         entity: Entity,
         identity_type: EntityIdentityType,
-    ) -> Optional[str]:
+    ) -> str | None:
         """Get first identity value of a type"""
         for identity in entity.identities:
             if identity.type == identity_type:

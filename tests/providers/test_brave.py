@@ -5,14 +5,13 @@ These tests use MockBraveSearchProvider to avoid requiring a real API key.
 """
 
 import pytest
-from pathlib import Path
 
 from leedhunter.application.search.providers.brave import (
-    BraveSearchProvider,
     BraveConfig,
+    BraveSearchProvider,
     MockBraveSearchProvider,
 )
-from leedhunter.domain.search.query import Query, QueryBuilder
+from leedhunter.domain.search.query import QueryBuilder
 
 
 class TestBraveConfig:
@@ -186,6 +185,7 @@ class TestBraveProviderContract:
         result = await provider.search(query)
 
         from leedhunter.application.search.provider import SearchResult
+
         assert isinstance(result, SearchResult)
         assert result.provider == "brave"
         assert isinstance(result.candidates, list)
@@ -204,6 +204,7 @@ class TestBraveProviderContract:
         health = await provider.get_health()
 
         from leedhunter.application.search.provider import ProviderHealth
+
         assert isinstance(health, ProviderHealth)
 
 

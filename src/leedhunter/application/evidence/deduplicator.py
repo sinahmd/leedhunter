@@ -11,7 +11,6 @@ Evidence is considered duplicate if:
 """
 
 from dataclasses import dataclass, field
-from typing import Optional
 
 from leedhunter.application.evidence.collector import CollectedEvidence
 from leedhunter.domain.normalization import normalize_text
@@ -59,7 +58,7 @@ class EvidenceDeduplicator:
             groups[key].append(evidence)
 
         # Process groups
-        for key, group in groups.items():
+        for _key, group in groups.items():
             if len(group) == 1:
                 result.unique_evidence.append(group[0])
             else:

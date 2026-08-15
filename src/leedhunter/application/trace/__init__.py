@@ -6,10 +6,10 @@ Every research job should produce traceable events.
 """
 
 from leedhunter.application.trace.tracer import (
+    ResearchTrace,
     ResearchTracer,
     TraceEvent,
     TraceEventType,
-    ResearchTrace,
 )
 
 __all__ = [

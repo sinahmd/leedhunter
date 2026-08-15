@@ -2,13 +2,11 @@
 Tests for Persian normalization in database operations
 """
 
-import pytest
-
 from leedhunter.domain.normalization import (
-    normalize_text,
     normalize_domain,
-    normalize_phone,
     normalize_email,
+    normalize_phone,
+    normalize_text,
     normalize_username,
 )
 

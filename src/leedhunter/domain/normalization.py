@@ -10,7 +10,6 @@ Always preserve both observed_value and canonical_value.
 
 import re
 import unicodedata
-from typing import Optional
 
 
 class PersianNormalizer:
@@ -284,7 +283,7 @@ class PersianNormalizer:
 
 
 # Global normalizer instance
-_normalizer: Optional[PersianNormalizer] = None
+_normalizer: PersianNormalizer | None = None
 
 
 def get_normalizer() -> PersianNormalizer:

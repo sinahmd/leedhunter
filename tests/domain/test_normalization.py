@@ -2,15 +2,13 @@
 Tests for Persian normalization utilities
 """
 
-import pytest
-
 from leedhunter.domain.normalization import (
     PersianNormalizer,
     get_normalizer,
-    normalize_text,
     normalize_domain,
-    normalize_phone,
     normalize_email,
+    normalize_phone,
+    normalize_text,
     normalize_username,
 )
 

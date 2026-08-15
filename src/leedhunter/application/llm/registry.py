@@ -4,11 +4,7 @@ LLM Provider Registry
 This module manages LLM provider registration and selection.
 """
 
-import os
-from typing import Optional
-
 from leedhunter.application.llm.provider import LLMProvider
-from leedhunter.application.llm.errors import LLMProviderUnavailableError
 
 
 class LLMProviderRegistry:
@@ -20,7 +16,7 @@ class LLMProviderRegistry:
 
     def __init__(self):
         self._providers: dict[str, LLMProvider] = {}
-        self._default_provider: Optional[str] = None
+        self._default_provider: str | None = None
 
     def register(self, provider: LLMProvider, is_default: bool = False) -> None:
         """
@@ -47,7 +43,7 @@ class LLMProviderRegistry:
         if self._default_provider == provider_name:
             self._default_provider = next(iter(self._providers), None)
 
-    def get_provider(self, name: str) -> Optional[LLMProvider]:
+    def get_provider(self, name: str) -> LLMProvider | None:
         """
         Get a provider by name
 
@@ -59,7 +55,7 @@ class LLMProviderRegistry:
         """
         return self._providers.get(name)
 
-    def get_default_provider(self) -> Optional[LLMProvider]:
+    def get_default_provider(self) -> LLMProvider | None:
         """
         Get the default provider
 
@@ -89,14 +85,14 @@ class LLMProviderRegistry:
         return len(self._providers) > 0
 
 
-def create_llm_provider_from_config() -> Optional[LLMProvider]:
+def create_llm_provider_from_config() -> LLMProvider | None:
     """
     Create an LLM provider from configuration
 
     Returns:
         LLMProvider if configured, None otherwise
     """
-    from leedhunter.config import get_settings, LLMProviderType
+    from leedhunter.config import LLMProviderType, get_settings
 
     settings = get_settings()
     llm_settings = settings.llm
@@ -120,10 +116,13 @@ def create_llm_provider_from_config() -> Optional[LLMProvider]:
         return None
 
 
-def _create_anthropic_provider(llm_settings) -> Optional[LLMProvider]:
+def _create_anthropic_provider(llm_settings) -> LLMProvider | None:
     """Create Anthropic provider"""
     try:
-        from leedhunter.application.llm.providers.anthropic import AnthropicLLMProvider, AnthropicConfig
+        from leedhunter.application.llm.providers.anthropic import (
+            AnthropicConfig,
+            AnthropicLLMProvider,
+        )
 
         config = AnthropicConfig(
             api_key=llm_settings.api_key,
@@ -137,10 +136,10 @@ def _create_anthropic_provider(llm_settings) -> Optional[LLMProvider]:
         return None
 
 
-def _create_openai_provider(llm_settings) -> Optional[LLMProvider]:
+def _create_openai_provider(llm_settings) -> LLMProvider | None:
     """Create OpenAI provider"""
     try:
-        from leedhunter.application.llm.providers.openai import OpenAILLMProvider, OpenAIConfig
+        from leedhunter.application.llm.providers.openai import OpenAIConfig, OpenAILLMProvider
 
         config = OpenAIConfig(
             api_key=llm_settings.api_key,
@@ -154,10 +153,10 @@ def _create_openai_provider(llm_settings) -> Optional[LLMProvider]:
         return None
 
 
-def _create_openai_compatible_provider(llm_settings) -> Optional[LLMProvider]:
+def _create_openai_compatible_provider(llm_settings) -> LLMProvider | None:
     """Create OpenAI-compatible provider"""
     try:
-        from leedhunter.application.llm.providers.openai import OpenAILLMProvider, OpenAIConfig
+        from leedhunter.application.llm.providers.openai import OpenAIConfig, OpenAILLMProvider
 
         config = OpenAIConfig(
             api_key=llm_settings.api_key,

@@ -7,7 +7,6 @@ All structured LLM output must be validated against a schema.
 LLMs may NOT silently invent facts.
 """
 
-from typing import Optional
 from pydantic import BaseModel, ConfigDict, Field
 
 
@@ -16,8 +15,8 @@ class IntentAnalysisResult(BaseModel):
 
     model_config = ConfigDict(extra="forbid")
 
-    industry: Optional[str] = Field(None, description="Target industry")
-    location: Optional[str] = Field(None, description="Target location")
+    industry: str | None = Field(None, description="Target industry")
+    location: str | None = Field(None, description="Target location")
     actions: list[str] = Field(default_factory=list, description="Desired actions")
     targets: list[str] = Field(default_factory=list, description="Target types")
     platforms: list[str] = Field(default_factory=list, description="Target platforms")

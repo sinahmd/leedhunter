@@ -12,19 +12,15 @@ Prefer: exact identifiers → deterministic matching → fuzzy matching → sema
 
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Optional
 
 from leedhunter.domain.models import (
     Candidate,
     Entity,
-    EntityIdentity,
     EntityIdentityType,
 )
 from leedhunter.domain.normalization import (
     normalize_domain,
     normalize_phone,
-    normalize_email,
-    normalize_username,
     normalize_text,
 )
 
@@ -63,7 +59,7 @@ class MatchResult:
     """Result of a matching operation"""
 
     decision: MatchDecision
-    entity: Optional[Entity]
+    entity: Entity | None
     explanation: MatchExplanation
     confidence: float
 
@@ -83,7 +79,7 @@ class ExactMatcher:
         self,
         candidate: Candidate,
         entities: list[Entity],
-    ) -> Optional[MatchResult]:
+    ) -> MatchResult | None:
         """
         Try to match candidate against entities using exact identifiers
 
@@ -118,7 +114,9 @@ class ExactMatcher:
         if candidate.observed_domain and entity.canonical_domain:
             if candidate.observed_domain.lower() == entity.canonical_domain.lower():
                 matched_on.append("exact_domain")
-            elif normalize_domain(candidate.observed_domain) == normalize_domain(entity.canonical_domain):
+            elif normalize_domain(candidate.observed_domain) == normalize_domain(
+                entity.canonical_domain
+            ):
                 matched_on.append("normalized_domain")
 
         # Check email match
@@ -183,7 +181,7 @@ class DeterministicMatcher:
         self,
         candidate: Candidate,
         entities: list[Entity],
-    ) -> Optional[MatchResult]:
+    ) -> MatchResult | None:
         """
         Try to match candidate against entities using normalized identifiers
 
@@ -269,7 +267,7 @@ class FuzzyMatcher:
         self,
         candidate: Candidate,
         entities: list[Entity],
-    ) -> Optional[MatchResult]:
+    ) -> MatchResult | None:
         """
         Try to match candidate against entities using fuzzy name matching
 
@@ -295,10 +293,7 @@ class FuzzyMatcher:
 
         if best_match:
             # Check if it's an exact match (should be MATCH, not POSSIBLE_MATCH)
-            if best_score >= 1.0:
-                decision = MatchDecision.MATCH
-            else:
-                decision = MatchDecision.POSSIBLE_MATCH
+            decision = MatchDecision.MATCH if best_score >= 1.0 else MatchDecision.POSSIBLE_MATCH
 
             explanation = MatchExplanation(
                 decision=decision,
@@ -343,8 +338,8 @@ class FuzzyMatcher:
             return 0.0
 
         # Jaccard similarity on bigrams
-        bigrams1 = set(norm1[i:i+2] for i in range(len(norm1) - 1))
-        bigrams2 = set(norm2[i:i+2] for i in range(len(norm2) - 1))
+        bigrams1 = set(norm1[i : i + 2] for i in range(len(norm1) - 1))
+        bigrams2 = set(norm2[i : i + 2] for i in range(len(norm2) - 1))
 
         if not bigrams1 or not bigrams2:
             return 0.0

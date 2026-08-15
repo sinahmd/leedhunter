@@ -7,14 +7,14 @@ a consistent format for further processing.
 
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
-from typing import Any, Optional
+from typing import Any
 
 from leedhunter.domain.models import Candidate
 from leedhunter.domain.normalization import (
-    normalize_text,
     normalize_domain,
-    normalize_phone,
     normalize_email,
+    normalize_phone,
+    normalize_text,
     normalize_username,
 )
 
@@ -26,24 +26,24 @@ class NormalizedResult:
     # Source information
     source: str
     source_url: str
-    query_id: Optional[str] = None
+    query_id: str | None = None
 
     # Business information
-    name: Optional[str] = None
-    name_normalized: Optional[str] = None
-    domain: Optional[str] = None
-    domain_normalized: Optional[str] = None
+    name: str | None = None
+    name_normalized: str | None = None
+    domain: str | None = None
+    domain_normalized: str | None = None
 
     # Contact information
-    phone: Optional[str] = None
-    phone_normalized: Optional[str] = None
-    email: Optional[str] = None
-    email_normalized: Optional[str] = None
+    phone: str | None = None
+    phone_normalized: str | None = None
+    email: str | None = None
+    email_normalized: str | None = None
 
     # Social media
-    username: Optional[str] = None
-    username_normalized: Optional[str] = None
-    platform: Optional[str] = None
+    username: str | None = None
+    username_normalized: str | None = None
+    platform: str | None = None
 
     # Additional metadata
     metadata: dict[str, Any] = field(default_factory=dict)
@@ -83,7 +83,7 @@ class ResultNormalizer:
         self,
         raw_result: dict[str, Any],
         source: str,
-        query_id: Optional[str] = None,
+        query_id: str | None = None,
     ) -> NormalizedResult:
         """
         Normalize a raw search result
@@ -139,7 +139,7 @@ class ResultNormalizer:
         self,
         raw_results: list[dict[str, Any]],
         source: str,
-        query_id: Optional[str] = None,
+        query_id: str | None = None,
     ) -> list[NormalizedResult]:
         """
         Normalize a batch of raw results
@@ -152,20 +152,17 @@ class ResultNormalizer:
         Returns:
             List of NormalizedResult objects
         """
-        return [
-            self.normalize(result, source, query_id)
-            for result in raw_results
-        ]
+        return [self.normalize(result, source, query_id) for result in raw_results]
 
-    def _extract_name(self, raw_result: dict[str, Any]) -> Optional[str]:
+    def _extract_name(self, raw_result: dict[str, Any]) -> str | None:
         """Extract business name from raw result"""
         # Try different field names
-        for field in ["observed_name", "name", "title", "business_name"]:
-            if field in raw_result and raw_result[field]:
-                return raw_result[field]
+        for field_name in ["observed_name", "name", "title", "business_name"]:
+            if field_name in raw_result and raw_result[field_name]:
+                return raw_result[field_name]
         return None
 
-    def _extract_domain(self, raw_result: dict[str, Any]) -> Optional[str]:
+    def _extract_domain(self, raw_result: dict[str, Any]) -> str | None:
         """Extract domain from raw result"""
         # Try direct domain field
         if "observed_domain" in raw_result and raw_result["observed_domain"]:
@@ -176,6 +173,7 @@ class ResultNormalizer:
         if url:
             try:
                 from urllib.parse import urlparse
+
                 parsed = urlparse(url)
                 if parsed.netloc:
                     return parsed.netloc
@@ -184,28 +182,28 @@ class ResultNormalizer:
 
         return None
 
-    def _extract_phone(self, raw_result: dict[str, Any]) -> Optional[str]:
+    def _extract_phone(self, raw_result: dict[str, Any]) -> str | None:
         """Extract phone number from raw result"""
-        for field in ["observed_phone", "phone", "telephone", "mobile"]:
-            if field in raw_result and raw_result[field]:
-                return raw_result[field]
+        for field_name in ["observed_phone", "phone", "telephone", "mobile"]:
+            if field_name in raw_result and raw_result[field_name]:
+                return raw_result[field_name]
         return None
 
-    def _extract_email(self, raw_result: dict[str, Any]) -> Optional[str]:
+    def _extract_email(self, raw_result: dict[str, Any]) -> str | None:
         """Extract email from raw result"""
-        for field in ["observed_email", "email", "contact_email"]:
-            if field in raw_result and raw_result[field]:
-                return raw_result[field]
+        for field_name in ["observed_email", "email", "contact_email"]:
+            if field_name in raw_result and raw_result[field_name]:
+                return raw_result[field_name]
         return None
 
-    def _extract_username(self, raw_result: dict[str, Any]) -> Optional[str]:
+    def _extract_username(self, raw_result: dict[str, Any]) -> str | None:
         """Extract username from raw result"""
-        for field in ["observed_username", "username", "handle"]:
-            if field in raw_result and raw_result[field]:
-                return raw_result[field]
+        for field_name in ["observed_username", "username", "handle"]:
+            if field_name in raw_result and raw_result[field_name]:
+                return raw_result[field_name]
         return None
 
-    def _extract_platform(self, raw_result: dict[str, Any]) -> Optional[str]:
+    def _extract_platform(self, raw_result: dict[str, Any]) -> str | None:
         """Extract platform from raw result"""
         # Try direct platform field
         if "platform" in raw_result:

@@ -8,16 +8,14 @@ FALSE MERGE IS MORE DANGEROUS THAN FALSE SPLIT
 When uncertain, prefer POSSIBLE_MATCH or NEW_ENTITY over unsafe merge.
 """
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from enum import Enum
-from typing import Optional
 
 from leedhunter.application.resolution.matchers import (
-    ExactMatcher,
     DeterministicMatcher,
+    ExactMatcher,
     FuzzyMatcher,
     MatchDecision,
-    MatchResult,
     MatchExplanation,
 )
 from leedhunter.domain.models import Candidate, Entity
@@ -36,7 +34,7 @@ class ResolutionResult:
     """Result of entity resolution"""
 
     decision: ResolutionDecision
-    matched_entity: Optional[Entity]
+    matched_entity: Entity | None
     explanation: MatchExplanation
     confidence: float
     match_stage: str  # Which stage produced the match
@@ -162,10 +160,7 @@ class EntityResolutionOrchestrator:
         Returns:
             List of ResolutionResult objects
         """
-        return [
-            self.resolve(candidate, existing_entities)
-            for candidate in candidates
-        ]
+        return [self.resolve(candidate, existing_entities) for candidate in candidates]
 
     def explain_resolution(
         self,
@@ -188,7 +183,9 @@ class EntityResolutionOrchestrator:
                 "id": result.matched_entity.id,
                 "name": result.matched_entity.canonical_name,
                 "domain": result.matched_entity.canonical_domain,
-            } if result.matched_entity else None,
+            }
+            if result.matched_entity
+            else None,
             "explanation": result.explanation.to_dict(),
             "recommendation": self._get_recommendation(result),
         }

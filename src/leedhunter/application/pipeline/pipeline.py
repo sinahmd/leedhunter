@@ -6,11 +6,10 @@ Search Results → Normalization → Extraction → Deduplication → Candidates
 """
 
 from dataclasses import dataclass, field
-from typing import Optional
 
-from leedhunter.application.pipeline.normalizer import ResultNormalizer, NormalizedResult
-from leedhunter.application.pipeline.extractor import CandidateExtractor, ExtractedCandidate
 from leedhunter.application.pipeline.deduplicator import CandidateDeduplicator, DeduplicationResult
+from leedhunter.application.pipeline.extractor import CandidateExtractor, ExtractedCandidate
+from leedhunter.application.pipeline.normalizer import NormalizedResult, ResultNormalizer
 from leedhunter.domain.models import Candidate
 
 
@@ -31,11 +30,11 @@ class PipelineResult:
     # Detailed results
     normalized_results: list[NormalizedResult] = field(default_factory=list)
     extracted_candidates: list[ExtractedCandidate] = field(default_factory=list)
-    deduplication_result: Optional[DeduplicationResult] = None
+    deduplication_result: DeduplicationResult | None = None
 
     # Provenance
-    query_id: Optional[str] = None
-    provider: Optional[str] = None
+    query_id: str | None = None
+    provider: str | None = None
 
 
 class CandidatePipeline:
@@ -58,7 +57,7 @@ class CandidatePipeline:
         self,
         raw_results: list[dict],
         source: str,
-        query_id: Optional[str] = None,
+        query_id: str | None = None,
     ) -> PipelineResult:
         """
         Process raw results through the pipeline
@@ -78,21 +77,15 @@ class CandidatePipeline:
         )
 
         # Step 1: Normalize results
-        result.normalized_results = self.normalizer.normalize_batch(
-            raw_results, source, query_id
-        )
+        result.normalized_results = self.normalizer.normalize_batch(raw_results, source, query_id)
         result.total_normalized = len(result.normalized_results)
 
         # Step 2: Extract candidates
-        result.extracted_candidates = self.extractor.extract_batch(
-            result.normalized_results
-        )
+        result.extracted_candidates = self.extractor.extract_batch(result.normalized_results)
         result.total_extracted = len(result.extracted_candidates)
 
         # Step 3: Deduplicate candidates
-        result.deduplication_result = self.deduplicator.deduplicate(
-            result.extracted_candidates
-        )
+        result.deduplication_result = self.deduplicator.deduplicate(result.extracted_candidates)
         result.total_duplicates_removed = result.deduplication_result.duplicates_removed
         result.total_unique = len(result.deduplication_result.unique_candidates)
 
@@ -106,7 +99,7 @@ class CandidatePipeline:
         self,
         raw_results: list[dict],
         source: str,
-        query_ids: Optional[list[str]] = None,
+        query_ids: list[str] | None = None,
     ) -> list[PipelineResult]:
         """
         Process a batch of raw results

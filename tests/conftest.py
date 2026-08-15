@@ -3,6 +3,7 @@ Pytest configuration and fixtures
 """
 
 import pytest
+
 from leedhunter.config import Settings, reset_settings
 
 
@@ -42,6 +43,7 @@ def sample_search_intent():
 def sample_candidate():
     """Sample Candidate for testing"""
     from datetime import datetime, timezone
+
     from leedhunter.domain.models import Candidate
 
     return Candidate(
@@ -62,6 +64,7 @@ def sample_candidate():
 def sample_entity():
     """Sample Entity for testing"""
     from datetime import datetime, timezone
+
     from leedhunter.domain.models import Entity, EntityIdentity, EntityIdentityType
 
     return Entity(
@@ -98,6 +101,7 @@ def sample_entity():
 def sample_evidence():
     """Sample Evidence for testing"""
     from datetime import datetime, timezone
+
     from leedhunter.domain.models import Evidence
 
     return Evidence(
@@ -129,7 +133,8 @@ def sample_signal():
 def sample_lead(sample_entity, sample_signal, sample_evidence):
     """Sample Lead for testing"""
     from datetime import datetime, timezone
-    from leedhunter.domain.models import Lead, Opportunity, LeadStatus
+
+    from leedhunter.domain.models import Lead, LeadStatus, Opportunity
 
     return Lead(
         entity=sample_entity,

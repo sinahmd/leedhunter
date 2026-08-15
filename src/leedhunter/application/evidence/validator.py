@@ -12,13 +12,10 @@ Evidence validation ensures:
 
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Optional
 
 from leedhunter.application.evidence.collector import CollectedEvidence
 from leedhunter.domain.normalization import (
     normalize_phone,
-    normalize_email,
-    normalize_domain,
 )
 
 
@@ -89,9 +86,7 @@ class EvidenceValidator:
             confidence *= 0.9
 
         # Validate value format based on claim type
-        value_errors, value_warnings = self._validate_value(
-            evidence.claim, evidence.value
-        )
+        value_errors, value_warnings = self._validate_value(evidence.claim, evidence.value)
         errors.extend(value_errors)
         warnings.extend(value_warnings)
 
@@ -159,9 +154,8 @@ class EvidenceValidator:
             if not self._is_valid_email(value):
                 errors.append(f"Invalid email format: {value}")
 
-        elif claim == "website_domain":
-            if not self._is_valid_domain(value):
-                warnings.append(f"Unusual domain format: {value}")
+        elif claim == "website_domain" and not self._is_valid_domain(value):
+            warnings.append(f"Unusual domain format: {value}")
 
         return errors, warnings
 

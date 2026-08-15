@@ -2,12 +2,9 @@
 Tests for qualification engine
 """
 
-import pytest
-
 from leedhunter.application.qualification.engine import (
     QualificationEngine,
     QualificationRule,
-    QualificationResult,
     QualificationStatus,
 )
 from leedhunter.domain.models import (

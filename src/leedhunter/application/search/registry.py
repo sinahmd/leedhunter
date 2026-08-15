@@ -4,14 +4,12 @@ Provider Registry
 This module manages search provider registration and selection.
 """
 
-from typing import Optional
-
 from leedhunter.application.search.provider import (
-    SearchProvider,
     ProviderHealth,
     ProviderStatus,
+    SearchProvider,
 )
-from leedhunter.application.search.rate_limiter import RateLimiter, RateLimitConfig
+from leedhunter.application.search.rate_limiter import RateLimitConfig, RateLimiter
 
 
 class ProviderRegistry:
@@ -28,12 +26,12 @@ class ProviderRegistry:
         self._providers: dict[str, SearchProvider] = {}
         self._health_cache: dict[str, ProviderHealth] = {}
         self._rate_limiters: dict[str, RateLimiter] = {}
-        self._default_provider: Optional[str] = None
+        self._default_provider: str | None = None
 
     def register(
         self,
         provider: SearchProvider,
-        rate_limit_config: Optional[RateLimitConfig] = None,
+        rate_limit_config: RateLimitConfig | None = None,
         is_default: bool = False,
     ) -> None:
         """
@@ -69,7 +67,7 @@ class ProviderRegistry:
         if self._default_provider == provider_name:
             self._default_provider = next(iter(self._providers), None)
 
-    def get_provider(self, name: str) -> Optional[SearchProvider]:
+    def get_provider(self, name: str) -> SearchProvider | None:
         """
         Get a provider by name
 
@@ -81,7 +79,7 @@ class ProviderRegistry:
         """
         return self._providers.get(name)
 
-    def get_default_provider(self) -> Optional[SearchProvider]:
+    def get_default_provider(self) -> SearchProvider | None:
         """
         Get the default provider
 
@@ -130,7 +128,7 @@ class ProviderRegistry:
                 available.append(provider)
         return available
 
-    async def get_provider_health(self, name: str) -> Optional[ProviderHealth]:
+    async def get_provider_health(self, name: str) -> ProviderHealth | None:
         """
         Get health information for a provider
 
@@ -171,7 +169,7 @@ class ProviderRegistry:
                 health_map[name] = health
         return health_map
 
-    def get_rate_limiter(self, provider_name: str) -> Optional[RateLimiter]:
+    def get_rate_limiter(self, provider_name: str) -> RateLimiter | None:
         """
         Get rate limiter for a provider
 
@@ -211,8 +209,8 @@ class ProviderRegistry:
 
     async def select_provider(
         self,
-        preferred_provider: Optional[str] = None,
-    ) -> Optional[SearchProvider]:
+        preferred_provider: str | None = None,
+    ) -> SearchProvider | None:
         """
         Select the best available provider
 
@@ -248,7 +246,7 @@ class ProviderRegistry:
 
 
 # Global registry instance
-_registry: Optional[ProviderRegistry] = None
+_registry: ProviderRegistry | None = None
 
 
 def get_provider_registry() -> ProviderRegistry:

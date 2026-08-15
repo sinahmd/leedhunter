@@ -7,8 +7,8 @@ An entity may have many identities (website, Instagram, LinkedIn, phone, email).
 
 from leedhunter.application.graph.graph import (
     EntityGraph,
-    GraphNode,
     GraphEdge,
+    GraphNode,
 )
 
 __all__ = [

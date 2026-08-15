@@ -12,7 +12,6 @@ The user should not need to understand Docker/container internals to perform res
 
 import os
 from dataclasses import dataclass, field
-from typing import Optional
 
 
 @dataclass
@@ -29,7 +28,7 @@ class SandboxConfig:
     blocked_domains: list[str] = field(default_factory=list)
 
     # File system settings
-    temp_dir: Optional[str] = None
+    temp_dir: str | None = None
     max_temp_size_mb: int = 100
 
     # Browser settings
@@ -50,7 +49,8 @@ class SandboxConfig:
             max_timeout_seconds=int(os.getenv("LEEDHUNTER_SANDBOX_TIMEOUT", "300")),
             headless=os.getenv("LEEDHUNTER_SANDBOX_HEADLESS", "true").lower() == "true",
             disable_images=os.getenv("LEEDHUNTER_SANDBOX_DISABLE_IMAGES", "true").lower() == "true",
-            disable_javascript=os.getenv("LEEDHUNTER_SANDBOX_DISABLE_JS", "false").lower() == "true",
+            disable_javascript=os.getenv("LEEDHUNTER_SANDBOX_DISABLE_JS", "false").lower()
+            == "true",
             provider_timeout=float(os.getenv("LEEDHUNTER_SANDBOX_PROVIDER_TIMEOUT", "30.0")),
             max_retries=int(os.getenv("LEEDHUNTER_SANDBOX_MAX_RETRIES", "3")),
         )
@@ -72,7 +72,7 @@ class SandboxManager:
     (Docker, containers) would be implemented separately.
     """
 
-    def __init__(self, config: Optional[SandboxConfig] = None):
+    def __init__(self, config: SandboxConfig | None = None):
         self._config = config or SandboxConfig.from_env()
 
     @property

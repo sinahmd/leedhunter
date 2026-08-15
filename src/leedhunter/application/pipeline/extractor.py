@@ -5,7 +5,6 @@ This module extracts candidates and identities from normalized results.
 """
 
 from dataclasses import dataclass, field
-from typing import Optional
 
 from leedhunter.application.pipeline.normalizer import NormalizedResult
 from leedhunter.domain.models import (
@@ -75,54 +74,64 @@ class IdentityExtractor:
 
         # Extract domain identity
         if result.domain:
-            identities.append(ExtractedIdentity(
-                type=EntityIdentityType.WEBSITE,
-                value=result.domain,
-                normalized_value=result.domain_normalized or normalize_domain(result.domain),
-                source=result.source,
-                source_url=result.source_url,
-                is_primary=True,  # Website is usually primary
-            ))
+            identities.append(
+                ExtractedIdentity(
+                    type=EntityIdentityType.WEBSITE,
+                    value=result.domain,
+                    normalized_value=result.domain_normalized or normalize_domain(result.domain),
+                    source=result.source,
+                    source_url=result.source_url,
+                    is_primary=True,  # Website is usually primary
+                )
+            )
 
         # Extract Instagram identity
         if result.platform == "instagram" and result.username:
-            identities.append(ExtractedIdentity(
-                type=EntityIdentityType.INSTAGRAM,
-                value=result.username,
-                normalized_value=result.username_normalized or result.username.lower(),
-                source=result.source,
-                source_url=result.source_url,
-            ))
+            identities.append(
+                ExtractedIdentity(
+                    type=EntityIdentityType.INSTAGRAM,
+                    value=result.username,
+                    normalized_value=result.username_normalized or result.username.lower(),
+                    source=result.source,
+                    source_url=result.source_url,
+                )
+            )
 
         # Extract LinkedIn identity
         elif result.platform == "linkedin" and result.username:
-            identities.append(ExtractedIdentity(
-                type=EntityIdentityType.LINKEDIN,
-                value=result.username,
-                normalized_value=result.username_normalized or result.username.lower(),
-                source=result.source,
-                source_url=result.source_url,
-            ))
+            identities.append(
+                ExtractedIdentity(
+                    type=EntityIdentityType.LINKEDIN,
+                    value=result.username,
+                    normalized_value=result.username_normalized or result.username.lower(),
+                    source=result.source,
+                    source_url=result.source_url,
+                )
+            )
 
         # Extract phone identity
         if result.phone:
-            identities.append(ExtractedIdentity(
-                type=EntityIdentityType.PHONE,
-                value=result.phone,
-                normalized_value=result.phone_normalized or result.phone,
-                source=result.source,
-                source_url=result.source_url,
-            ))
+            identities.append(
+                ExtractedIdentity(
+                    type=EntityIdentityType.PHONE,
+                    value=result.phone,
+                    normalized_value=result.phone_normalized or result.phone,
+                    source=result.source,
+                    source_url=result.source_url,
+                )
+            )
 
         # Extract email identity
         if result.email:
-            identities.append(ExtractedIdentity(
-                type=EntityIdentityType.EMAIL,
-                value=result.email,
-                normalized_value=result.email_normalized or result.email.lower(),
-                source=result.source,
-                source_url=result.source_url,
-            ))
+            identities.append(
+                ExtractedIdentity(
+                    type=EntityIdentityType.EMAIL,
+                    value=result.email,
+                    normalized_value=result.email_normalized or result.email.lower(),
+                    source=result.source,
+                    source_url=result.source_url,
+                )
+            )
 
         return identities
 
@@ -139,10 +148,7 @@ class IdentityExtractor:
         Returns:
             List of (result, identities) tuples
         """
-        return [
-            (result, self.extract(result))
-            for result in results
-        ]
+        return [(result, self.extract(result)) for result in results]
 
 
 class CandidateExtractor:

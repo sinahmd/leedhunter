@@ -19,7 +19,6 @@ The graph supports:
 """
 
 from dataclasses import dataclass, field
-from typing import Optional
 
 from leedhunter.domain.models import (
     Entity,
@@ -28,8 +27,8 @@ from leedhunter.domain.models import (
 )
 from leedhunter.domain.normalization import (
     normalize_domain,
-    normalize_phone,
     normalize_email,
+    normalize_phone,
     normalize_username,
 )
 
@@ -113,7 +112,7 @@ class EntityGraph:
                 self._index[key] = set()
             self._index[key].add(entity.id)
 
-    def remove_entity(self, entity_id: str) -> Optional[Entity]:
+    def remove_entity(self, entity_id: str) -> Entity | None:
         """
         Remove an entity from the graph
 
@@ -139,7 +138,7 @@ class EntityGraph:
 
         return node.entity
 
-    def get_entity(self, entity_id: str) -> Optional[Entity]:
+    def get_entity(self, entity_id: str) -> Entity | None:
         """
         Get an entity by ID
 
@@ -156,7 +155,7 @@ class EntityGraph:
         self,
         identity_type: EntityIdentityType,
         value: str,
-    ) -> Optional[Entity]:
+    ) -> Entity | None:
         """
         Find an entity by identity
 
@@ -195,11 +194,7 @@ class EntityGraph:
         key = self._make_key(identity_type, value)
         entity_ids = self._index.get(key, set())
 
-        return [
-            self.get_entity(eid)
-            for eid in entity_ids
-            if self.get_entity(eid) is not None
-        ]
+        return [self.get_entity(eid) for eid in entity_ids if self.get_entity(eid) is not None]
 
     def add_identity(
         self,
@@ -224,7 +219,7 @@ class EntityGraph:
         node.entity.identities.append(identity)
 
         # Update node keys
-        new_keys = node._calculate_keys()
+        node._calculate_keys()
         new_key = self._make_key(identity.type, identity.value)
 
         if new_key not in node.identity_keys:
@@ -241,7 +236,7 @@ class EntityGraph:
         self,
         source_id: str,
         target_id: str,
-    ) -> Optional[Entity]:
+    ) -> Entity | None:
         """
         Merge source entity into target entity
 
@@ -304,11 +299,7 @@ class EntityGraph:
                 if eid != entity_id:
                     candidates.add(eid)
 
-        return [
-            self.get_entity(eid)
-            for eid in candidates
-            if self.get_entity(eid) is not None
-        ]
+        return [self.get_entity(eid) for eid in candidates if self.get_entity(eid) is not None]
 
     def get_all_entities(self) -> list[Entity]:
         """

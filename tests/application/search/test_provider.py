@@ -3,24 +3,23 @@ Tests for search provider module
 """
 
 import pytest
-from datetime import datetime, timezone
-from typing import Optional
 
-from leedhunter.domain.models import Candidate, SearchQuery
 from leedhunter.application.search.provider import (
+    ProviderHealth,
+    ProviderStatus,
     SearchProvider,
     SearchResult,
-    ProviderStatus,
-    ProviderHealth,
+)
+from leedhunter.application.search.rate_limiter import (
+    RateLimitConfig,
+    RateLimiter,
 )
 from leedhunter.application.search.registry import (
     ProviderRegistry,
     reset_provider_registry,
 )
-from leedhunter.application.search.rate_limiter import (
-    RateLimiter,
-    RateLimitConfig,
-)
+from leedhunter.domain.models import Candidate
+from leedhunter.domain.search.query import Query
 
 
 class MockSearchProvider(SearchProvider):
@@ -30,7 +29,7 @@ class MockSearchProvider(SearchProvider):
         self,
         name: str = "mock",
         available: bool = True,
-        candidates: Optional[list[Candidate]] = None,
+        candidates: list[Candidate] | None = None,
     ):
         self._name = name
         self._available = available
@@ -44,7 +43,7 @@ class MockSearchProvider(SearchProvider):
     def supported_operators(self) -> list[str]:
         return ["site:", "intitle:", "inurl:"]
 
-    async def search(self, query: SearchQuery) -> SearchResult:
+    async def search(self, query: Query) -> SearchResult:
         return SearchResult(
             query=query,
             candidates=self._candidates,
@@ -96,7 +95,7 @@ class TestSearchResult:
 
     def test_create_result(self):
         """Test creating SearchResult"""
-        query = SearchQuery(terms=["test"])
+        query = Query(terms=["test"])
         result = SearchResult(
             query=query,
             candidates=[],
@@ -108,7 +107,7 @@ class TestSearchResult:
 
     def test_result_length(self):
         """Test result length"""
-        query = SearchQuery(terms=["test"])
+        query = Query(terms=["test"])
         candidates = [
             Candidate(source="mock", source_url="https://example.com/1"),
             Candidate(source="mock", source_url="https://example.com/2"),
@@ -132,7 +131,7 @@ class TestSearchProvider:
         provider = MockSearchProvider()
 
         # Valid query
-        query = SearchQuery(terms=["test"])
+        query = Query(terms=["test"])
         errors = provider.validate_query(query)
         assert len(errors) == 0
 
@@ -141,7 +140,7 @@ class TestSearchProvider:
         provider = MockSearchProvider()
 
         # Create query with operator in dict format
-        query = SearchQuery(
+        query = Query(
             terms=["test"],
             operators={"site": "example.com"},
         )

@@ -12,8 +12,7 @@ Opportunities reference signal IDs for provenance.
 """
 
 import hashlib
-from dataclasses import dataclass, field
-from typing import Optional
+from dataclasses import dataclass
 
 from leedhunter.domain.models import (
     Opportunity,
@@ -79,7 +78,7 @@ class OpportunityEngine:
         ),
     ]
 
-    def __init__(self, rules: Optional[list[OpportunityRule]] = None):
+    def __init__(self, rules: list[OpportunityRule] | None = None):
         self._rules = rules or self.DEFAULT_RULES
 
     def identify(
@@ -138,7 +137,7 @@ class OpportunityEngine:
         opportunities = self.identify(entity_id, signals)
         return opportunities[:max_opportunities]
 
-    def _find_rule(self, signal_type: SignalType) -> Optional[OpportunityRule]:
+    def _find_rule(self, signal_type: SignalType) -> OpportunityRule | None:
         """Find the rule for a signal type"""
         for rule in self._rules:
             if rule.signal_type == signal_type:
@@ -177,8 +176,7 @@ class OpportunityEngine:
         """
         # Find supporting signals
         supporting_signals = [
-            s for s in signals
-            if _generate_signal_id(s) in opportunity.signal_ids
+            s for s in signals if _generate_signal_id(s) in opportunity.signal_ids
         ]
 
         return {

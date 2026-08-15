@@ -2,11 +2,9 @@
 Tests for evidence engine
 """
 
-import pytest
-
-from leedhunter.application.evidence.collector import EvidenceCollector, CollectedEvidence
-from leedhunter.application.evidence.validator import EvidenceValidator, ValidationStatus
+from leedhunter.application.evidence.collector import CollectedEvidence, EvidenceCollector
 from leedhunter.application.evidence.deduplicator import EvidenceDeduplicator
+from leedhunter.application.evidence.validator import EvidenceValidator, ValidationStatus
 
 
 class TestEvidenceCollector:

@@ -12,9 +12,8 @@ Final merge/dedup decision belongs to the deterministic Entity Resolution layer.
 """
 
 from dataclasses import dataclass
-from typing import Optional
 
-from leedhunter.application.llm.parser import LLMResponseParser, ParseResult
+from leedhunter.application.llm.parser import LLMResponseParser
 from leedhunter.application.llm.provider import LLMProvider
 from leedhunter.application.llm.schemas import EntityComparisonResult
 from leedhunter.domain.models import Candidate, Entity
@@ -54,7 +53,7 @@ class LLMArbiter:
 
     def __init__(
         self,
-        llm_provider: Optional[LLMProvider] = None,
+        llm_provider: LLMProvider | None = None,
     ):
         self._llm = llm_provider
         self._parser = LLMResponseParser()
@@ -145,7 +144,6 @@ class LLMArbiter:
             info["domain"] = entity.canonical_domain
         if entity.identities:
             info["identities"] = [
-                {"type": i.type.value, "value": i.value}
-                for i in entity.identities
+                {"type": i.type.value, "value": i.value} for i in entity.identities
             ]
         return info

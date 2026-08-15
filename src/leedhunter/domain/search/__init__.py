@@ -5,19 +5,6 @@ This module implements the search query representation and manipulation.
 It provides structured query construction with support for Persian/Arabic text.
 """
 
-from leedhunter.domain.search.query import (
-    Query,
-    QueryTerm,
-    ExactPhrase,
-    Operator,
-    SiteOperator,
-    IntitleOperator,
-    InurlOperator,
-    Exclusion,
-    QueryBuilder,
-    OperatorType,
-)
-
 from leedhunter.domain.search.planner import (
     Concept,
     ConceptType,
@@ -25,6 +12,18 @@ from leedhunter.domain.search.planner import (
     IntentAnalyzer,
     QueryGenerator,
     SearchPlanner,
+)
+from leedhunter.domain.search.query import (
+    ExactPhrase,
+    Exclusion,
+    IntitleOperator,
+    InurlOperator,
+    Operator,
+    OperatorType,
+    Query,
+    QueryBuilder,
+    QueryTerm,
+    SiteOperator,
 )
 
 __all__ = [

@@ -16,17 +16,15 @@ Do not create unsupported factual claims.
 """
 
 from leedhunter.application.evidence.collector import (
-    EvidenceCollector,
     CollectedEvidence,
+    EvidenceCollector,
 )
-
+from leedhunter.application.evidence.deduplicator import (
+    EvidenceDeduplicator,
+)
 from leedhunter.application.evidence.validator import (
     EvidenceValidator,
     ValidationResult,
-)
-
-from leedhunter.application.evidence.deduplicator import (
-    EvidenceDeduplicator,
 )
 
 __all__ = [

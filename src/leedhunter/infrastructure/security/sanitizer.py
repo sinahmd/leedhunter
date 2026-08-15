@@ -8,7 +8,6 @@ This module provides security hardening:
 """
 
 import re
-from typing import Optional
 
 
 class InputSanitizer:
@@ -84,7 +83,7 @@ class InputSanitizer:
 
         return html
 
-    def sanitize_url(self, url: str) -> Optional[str]:
+    def sanitize_url(self, url: str) -> str | None:
         """
         Sanitize and validate a URL.
 

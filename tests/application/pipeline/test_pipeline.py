@@ -2,12 +2,10 @@
 Tests for candidate pipeline
 """
 
-import pytest
-
-from leedhunter.application.pipeline.normalizer import ResultNormalizer, NormalizedResult
-from leedhunter.application.pipeline.extractor import CandidateExtractor, IdentityExtractor
 from leedhunter.application.pipeline.deduplicator import CandidateDeduplicator
-from leedhunter.application.pipeline.pipeline import CandidatePipeline, PipelineResult
+from leedhunter.application.pipeline.extractor import CandidateExtractor, IdentityExtractor
+from leedhunter.application.pipeline.normalizer import NormalizedResult, ResultNormalizer
+from leedhunter.application.pipeline.pipeline import CandidatePipeline
 from leedhunter.domain.models import EntityIdentityType
 
 

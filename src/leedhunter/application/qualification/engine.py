@@ -12,17 +12,14 @@ A lead is qualified if:
 
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Optional
 
 from leedhunter.domain.models import (
     Entity,
-    EntityIdentity,
     EntityIdentityType,
     Lead,
     LeadStatus,
     Opportunity,
     Signal,
-    SignalType,
 )
 
 
@@ -101,7 +98,7 @@ class QualificationEngine:
 
     def __init__(
         self,
-        rules: Optional[list[QualificationRule]] = None,
+        rules: list[QualificationRule] | None = None,
         min_score: float = 0.5,
     ):
         self._rules = rules or self.DEFAULT_RULES
@@ -178,7 +175,11 @@ class QualificationEngine:
             opportunities=lead.opportunities,
         )
 
-        lead.status = LeadStatus.QUALIFIED if result.status == QualificationStatus.QUALIFIED else LeadStatus.DISQUALIFIED
+        lead.status = (
+            LeadStatus.QUALIFIED
+            if result.status == QualificationStatus.QUALIFIED
+            else LeadStatus.DISQUALIFIED
+        )
         lead.qualification_reasons = result.reasons
 
         return lead

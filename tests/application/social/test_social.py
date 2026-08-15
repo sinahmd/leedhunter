@@ -2,12 +2,10 @@
 Tests for social discovery
 """
 
-import pytest
-
 from leedhunter.application.social.discovery import (
+    PlatformType,
     SocialDiscovery,
     SocialProfile,
-    PlatformType,
 )
 from leedhunter.domain.models import EntityIdentityType
 

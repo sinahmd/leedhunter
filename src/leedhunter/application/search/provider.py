@@ -8,7 +8,6 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from enum import Enum
-from typing import Optional
 
 from leedhunter.domain.models import Candidate
 from leedhunter.domain.search.query import Query
@@ -29,9 +28,9 @@ class ProviderHealth:
 
     status: ProviderStatus
     last_check: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
-    last_success: Optional[datetime] = None
-    last_failure: Optional[datetime] = None
-    error_message: Optional[str] = None
+    last_success: datetime | None = None
+    last_failure: datetime | None = None
+    error_message: str | None = None
     success_rate: float = 1.0
     average_response_time: float = 0.0
 
@@ -50,7 +49,7 @@ class SearchResult:
     total_results: int = 0
     search_time: float = 0.0
     success: bool = True
-    error_message: Optional[str] = None
+    error_message: str | None = None
 
     def __len__(self) -> int:
         return len(self.candidates)

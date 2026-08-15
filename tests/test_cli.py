@@ -5,8 +5,8 @@ Tests for CLI module
 import pytest
 from typer.testing import CliRunner
 
-from leedhunter.cli import app
 from leedhunter import __version__
+from leedhunter.cli import app
 
 
 @pytest.fixture
@@ -116,12 +116,20 @@ class TestScoreCommand:
 
     def test_score_with_options(self, runner):
         """Test score with options"""
-        result = runner.invoke(app, [
-            "score", "Test Business",
-            "--phone", "--email", "--website",
-            "--industry", "automotive",
-            "--location", "mazandaran",
-        ])
+        result = runner.invoke(
+            app,
+            [
+                "score",
+                "Test Business",
+                "--phone",
+                "--email",
+                "--website",
+                "--industry",
+                "automotive",
+                "--location",
+                "mazandaran",
+            ],
+        )
         # Should run without crashing
         assert result.exit_code == 0 or "Scoring" in result.output
 

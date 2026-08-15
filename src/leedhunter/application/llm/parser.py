@@ -10,7 +10,7 @@ Invalid output must fail explicitly.
 import json
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any, Generic, Optional, TypeVar
+from typing import Generic, TypeVar
 
 from pydantic import BaseModel, ValidationError
 
@@ -33,9 +33,9 @@ class ParseResult(Generic[T]):
     """Result of parsing an LLM response"""
 
     status: ParseStatus
-    data: Optional[T] = None
-    error_message: Optional[str] = None
-    raw_response: Optional[str] = None
+    data: T | None = None
+    error_message: str | None = None
+    raw_response: str | None = None
 
     def is_success(self) -> bool:
         """Check if parsing was successful"""
@@ -44,7 +44,9 @@ class ParseResult(Generic[T]):
     def get_data(self) -> T:
         """Get parsed data, raises if not successful"""
         if not self.is_success() or self.data is None:
-            raise ValueError(f"Cannot get data from parse result: {self.status.value} - {self.error_message}")
+            raise ValueError(
+                f"Cannot get data from parse result: {self.status.value} - {self.error_message}"
+            )
         return self.data
 
 
@@ -161,7 +163,7 @@ class LLMResponseError(Exception):
         self,
         status: ParseStatus,
         message: str,
-        raw_response: Optional[str] = None,
+        raw_response: str | None = None,
     ):
         self.status = status
         self.raw_response = raw_response

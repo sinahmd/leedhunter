@@ -2,8 +2,6 @@
 Tests for entity graph
 """
 
-import pytest
-
 from leedhunter.application.graph.graph import EntityGraph, GraphNode
 from leedhunter.domain.models import (
     Entity,

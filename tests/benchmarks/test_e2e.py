@@ -6,16 +6,27 @@ Search → Candidates → Entity Resolution → Evidence → Signals → Opportu
 """
 
 import json
-import pytest
-from datetime import datetime, timezone
 from pathlib import Path
 
+import pytest
+
+from leedhunter.application.evidence.collector import EvidenceCollector
+from leedhunter.application.opportunities.engine import OpportunityEngine
+from leedhunter.application.pipeline.deduplicator import CandidateDeduplicator
+from leedhunter.application.pipeline.extractor import CandidateExtractor
+from leedhunter.application.pipeline.normalizer import ResultNormalizer
+from leedhunter.application.qualification.engine import QualificationEngine
+from leedhunter.application.resolution.orchestrator import (
+    EntityResolutionOrchestrator,
+    ResolutionDecision,
+)
+from leedhunter.application.scoring.engine import ScoringEngine
+from leedhunter.application.signals.detector import SignalDetector
 from leedhunter.domain.models import (
     Candidate,
     Entity,
     EntityIdentity,
     EntityIdentityType,
-    Evidence,
     Lead,
     LeadStatus,
     Opportunity,
@@ -24,16 +35,6 @@ from leedhunter.domain.models import (
     SignalType,
 )
 from leedhunter.domain.search.planner import SearchPlanner
-from leedhunter.domain.search.query import Query, QueryBuilder
-from leedhunter.application.pipeline.normalizer import ResultNormalizer
-from leedhunter.application.pipeline.extractor import CandidateExtractor
-from leedhunter.application.pipeline.deduplicator import CandidateDeduplicator
-from leedhunter.application.resolution.orchestrator import EntityResolutionOrchestrator, ResolutionDecision
-from leedhunter.application.evidence.collector import EvidenceCollector
-from leedhunter.application.signals.detector import SignalDetector
-from leedhunter.application.opportunities.engine import OpportunityEngine
-from leedhunter.application.qualification.engine import QualificationEngine, QualificationStatus
-from leedhunter.application.scoring.engine import ScoringEngine
 
 
 class TestEndToEndBenchmark:
@@ -172,7 +173,7 @@ class TestEndToEndBenchmark:
             leads.append(lead)
 
         assert len(leads) == 2
-        assert any(l.status == LeadStatus.QUALIFIED for l in leads)
+        assert any(lead_item.status == LeadStatus.QUALIFIED for lead_item in leads)
 
         # Step 10: Score leads
         scoring_engine = ScoringEngine()
@@ -185,7 +186,7 @@ class TestEndToEndBenchmark:
             )
             lead.score = breakdown.total_score
 
-        assert all(l.score > 0 for l in leads)
+        assert all(lead_item.score > 0 for lead_item in leads)
 
     def test_entity_resolution_accuracy(self):
         """Test entity resolution accuracy against evaluation dataset"""
@@ -194,7 +195,7 @@ class TestEndToEndBenchmark:
         if not eval_path.exists():
             pytest.skip("Evaluation dataset not found")
 
-        with open(eval_path, "r", encoding="utf-8") as f:
+        with open(eval_path, encoding="utf-8") as f:
             pairs = json.load(f)
 
         orchestrator = EntityResolutionOrchestrator()
@@ -232,7 +233,7 @@ class TestEndToEndBenchmark:
 
         if total > 0:
             accuracy = correct / total
-            print(f"\nEntity Resolution Accuracy:")
+            print("\nEntity Resolution Accuracy:")
             print(f"  Total pairs: {total}")
             print(f"  Correct: {correct}")
             print(f"  Accuracy: {accuracy:.2%}")
@@ -288,7 +289,11 @@ class TestEndToEndBenchmark:
 
     def test_persian_normalization_consistency(self):
         """Test Persian normalization consistency"""
-        from leedhunter.domain.normalization import normalize_text, normalize_domain, normalize_phone
+        from leedhunter.domain.normalization import (
+            normalize_domain,
+            normalize_phone,
+            normalize_text,
+        )
 
         # Test consistency
         text = "واردات خودرو"

@@ -2,16 +2,13 @@
 Tests for search quality loop
 """
 
-import pytest
-
 from leedhunter.application.search.quality import (
-    QueryMetrics,
     ProviderMetrics,
-    QualityReport,
-    SearchQualityTracker,
+    QueryMetrics,
     QueryRefiner,
+    SearchQualityTracker,
 )
-from leedhunter.domain.search.query import Query, QueryBuilder, QueryTerm
+from leedhunter.domain.search.query import Query, QueryTerm
 
 
 class TestQueryMetrics:
@@ -225,7 +222,16 @@ class TestQueryRefiner:
 
     def test_suggest_refinement_too_many_terms(self):
         """Test suggestion for too many terms"""
-        query = Query(terms=[QueryTerm(value="a"), QueryTerm(value="b"), QueryTerm(value="c"), QueryTerm(value="d"), QueryTerm(value="e"), QueryTerm(value="f")])
+        query = Query(
+            terms=[
+                QueryTerm(value="a"),
+                QueryTerm(value="b"),
+                QueryTerm(value="c"),
+                QueryTerm(value="d"),
+                QueryTerm(value="e"),
+                QueryTerm(value="f"),
+            ]
+        )
         suggestions = self.refiner.suggest_refinement(query)
 
         assert len(suggestions) > 0

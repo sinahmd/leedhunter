@@ -15,39 +15,31 @@ This module connects all components into a complete research pipeline:
 
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
-from typing import Optional
 
-from leedhunter.domain.models import (
-    Candidate,
-    Entity,
-    EntityIdentity,
-    EntityIdentityType,
-    Evidence,
-    Lead,
-    LeadStatus,
-    Opportunity,
-    SearchIntent,
-    Signal,
-    SignalType,
-)
-from leedhunter.domain.search.planner import SearchPlanner
-from leedhunter.domain.search.query import Query
-
-from leedhunter.application.search.provider import SearchProvider, SearchResult
-from leedhunter.application.search.providers.fixture import FixtureSearchProvider
-from leedhunter.application.pipeline.normalizer import ResultNormalizer
-from leedhunter.application.pipeline.extractor import CandidateExtractor
+from leedhunter.application.evidence.collector import EvidenceCollector
+from leedhunter.application.opportunities.engine import OpportunityEngine
 from leedhunter.application.pipeline.deduplicator import CandidateDeduplicator
+from leedhunter.application.pipeline.extractor import CandidateExtractor
+from leedhunter.application.pipeline.normalizer import ResultNormalizer
+from leedhunter.application.qualification.engine import QualificationEngine
 from leedhunter.application.resolution.orchestrator import (
     EntityResolutionOrchestrator,
     ResolutionDecision,
 )
-from leedhunter.application.evidence.collector import EvidenceCollector
-from leedhunter.application.signals.detector import SignalDetector
-from leedhunter.application.opportunities.engine import OpportunityEngine
-from leedhunter.application.qualification.engine import QualificationEngine, QualificationStatus
 from leedhunter.application.scoring.engine import ScoringEngine
+from leedhunter.application.search.provider import SearchProvider
+from leedhunter.application.search.providers.fixture import FixtureSearchProvider
+from leedhunter.application.signals.detector import SignalDetector
 from leedhunter.application.trace.tracer import ResearchTracer, TraceEventType
+from leedhunter.domain.models import (
+    Candidate,
+    Entity,
+    EntityIdentityType,
+    Lead,
+    LeadStatus,
+    SearchIntent,
+)
+from leedhunter.domain.search.planner import SearchPlanner
 
 
 @dataclass
@@ -82,9 +74,9 @@ class ResearchResult:
     duration_seconds: float = 0.0
     success: bool = True
     partial: bool = False
-    error_message: Optional[str] = None
+    error_message: str | None = None
     budget_exceeded: bool = False
-    budget_message: Optional[str] = None
+    budget_message: str | None = None
     failed_queries: list[str] = field(default_factory=list)
     coverage: dict[str, bool] = field(default_factory=dict)
 
@@ -98,8 +90,8 @@ class ResearchOrchestrator:
 
     def __init__(
         self,
-        search_provider: Optional[SearchProvider] = None,
-        config: Optional[ResearchConfig] = None,
+        search_provider: SearchProvider | None = None,
+        config: ResearchConfig | None = None,
     ):
         # Search
         self._search_provider = search_provider or FixtureSearchProvider()
@@ -121,7 +113,7 @@ class ResearchOrchestrator:
     async def research(
         self,
         intent: SearchIntent,
-        research_id: Optional[str] = None,
+        research_id: str | None = None,
     ) -> ResearchResult:
         """
         Execute a complete research job.
@@ -163,7 +155,9 @@ class ResearchOrchestrator:
                 elapsed = (datetime.now(timezone.utc) - start_time).total_seconds()
                 if elapsed >= self._config.max_runtime_seconds:
                     result.budget_exceeded = True
-                    result.budget_message = f"Runtime budget exceeded ({self._config.max_runtime_seconds}s)"
+                    result.budget_message = (
+                        f"Runtime budget exceeded ({self._config.max_runtime_seconds}s)"
+                    )
                     self._tracer.record_event(
                         TraceEventType.ERROR_OCCURRED,
                         metadata={"error": result.budget_message},
@@ -180,18 +174,20 @@ class ResearchOrchestrator:
 
                     if search_result.success:
                         # Enforce per-query candidate limit
-                        candidates = search_result.candidates[:self._config.max_candidates_per_query]
-                        all_raw_results.extend(
-                            [self._candidate_to_dict(c) for c in candidates]
-                        )
+                        candidates = search_result.candidates[
+                            : self._config.max_candidates_per_query
+                        ]
+                        all_raw_results.extend([self._candidate_to_dict(c) for c in candidates])
                         result.queries_executed += 1
                         result.coverage[query.to_string()] = True
 
                         # Enforce total candidate limit
                         if len(all_raw_results) >= self._config.max_candidates_total:
-                            all_raw_results = all_raw_results[:self._config.max_candidates_total]
+                            all_raw_results = all_raw_results[: self._config.max_candidates_total]
                             result.budget_exceeded = True
-                            result.budget_message = f"Candidate budget exceeded ({self._config.max_candidates_total})"
+                            result.budget_message = (
+                                f"Candidate budget exceeded ({self._config.max_candidates_total})"
+                            )
                             break
                     else:
                         result.queries_failed += 1
@@ -199,7 +195,10 @@ class ResearchOrchestrator:
                         result.coverage[query.to_string()] = False
                         self._tracer.record_event(
                             TraceEventType.PROVIDER_FAILED,
-                            metadata={"query": query.to_string(), "error": search_result.error_message},
+                            metadata={
+                                "query": query.to_string(),
+                                "error": search_result.error_message,
+                            },
                         )
                 except Exception as e:
                     result.queries_failed += 1
@@ -213,9 +212,7 @@ class ResearchOrchestrator:
             result.candidates_found = len(all_raw_results)
 
             # Step 3: Candidate Pipeline
-            normalized = self._normalizer.normalize_batch(
-                all_raw_results, "research", research_id
-            )
+            normalized = self._normalizer.normalize_batch(all_raw_results, "research", research_id)
             extracted = self._extractor.extract_batch(normalized)
             dedup_result = self._deduplicator.deduplicate(extracted)
 
@@ -224,18 +221,14 @@ class ResearchOrchestrator:
             for candidate in dedup_result.unique_candidates:
                 self._tracer.record_event(TraceEventType.CANDIDATE_CREATED)
 
-                resolution_result = self._resolution.resolve(
-                    candidate.candidate, entities
-                )
+                resolution_result = self._resolution.resolve(candidate.candidate, entities)
 
                 if resolution_result.decision == ResolutionDecision.NEW_ENTITY:
                     entity = Entity(
                         id=f"entity_{len(entities) + 1}",
                         canonical_name=candidate.candidate.observed_name or "Unknown",
                         canonical_domain=candidate.candidate.observed_domain,
-                        identities=[
-                            i.to_entity_identity() for i in candidate.identities
-                        ],
+                        identities=[i.to_entity_identity() for i in candidate.identities],
                         metadata=candidate.candidate.metadata,
                     )
                     entities.append(entity)
@@ -259,7 +252,7 @@ class ResearchOrchestrator:
                             extracted_candidate.candidate,
                         )
                         evidence_list.extend(collected)
-                        for e in collected:
+                        for _e in collected:
                             evidence_id = f"ev_{entity.id}_{len(evidence_ids)}"
                             evidence_ids.append(evidence_id)
                             self._tracer.record_event(TraceEventType.EVIDENCE_CREATED)
@@ -275,20 +268,16 @@ class ResearchOrchestrator:
                         domain_evidence,
                         entity.identities,
                     )
-                    for s in signals:
+                    for _s in signals:
                         self._tracer.record_event(TraceEventType.SIGNAL_CREATED)
 
                 # Identify opportunities
                 opportunities = []
                 if self._config.include_opportunities:
-                    opportunities = self._opportunity_engine.identify(
-                        entity.id, signals
-                    )
+                    opportunities = self._opportunity_engine.identify(entity.id, signals)
 
                 # Score lead
-                breakdown = self._scoring_engine.calculate_score(
-                    entity, signals, opportunities
-                )
+                breakdown = self._scoring_engine.calculate_score(entity, signals, opportunities)
 
                 # Create lead
                 lead = Lead(
@@ -312,13 +301,14 @@ class ResearchOrchestrator:
 
             # Filter qualified leads
             qualified_leads = [
-                l for l in leads
-                if l.status == LeadStatus.QUALIFIED
-                and l.score >= self._config.min_score
+                l
+                for lead_item in leads
+                if lead_item.status == LeadStatus.QUALIFIED
+                and lead_item.score >= self._config.min_score
             ]
 
             # Sort by score
-            qualified_leads.sort(key=lambda l: l.score, reverse=True)
+            qualified_leads.sort(key=lambda l: lead_item.score, reverse=True)
 
             result.leads = qualified_leads
             result.leads_qualified = len(qualified_leads)
@@ -353,9 +343,7 @@ class ResearchOrchestrator:
             "metadata": candidate.metadata,
         }
 
-    def _entity_matches_candidate(
-        self, entity: Entity, extracted
-    ) -> bool:
+    def _entity_matches_candidate(self, entity: Entity, extracted) -> bool:
         """Check if entity matches extracted candidate"""
         candidate = extracted.candidate
 

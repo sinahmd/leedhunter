@@ -10,25 +10,22 @@ Pricing: $5 per 1,000 search requests, $5 monthly credits on standard plan
 Terms of Service: https://brave.com/search/api/
 """
 
-import asyncio
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from datetime import datetime, timezone
-from typing import Any, Optional
 from urllib.parse import urlparse
 
 import httpx
 
 from leedhunter.application.search.provider import (
-    SearchProvider,
-    SearchResult,
     ProviderHealth,
     ProviderStatus,
+    SearchProvider,
+    SearchResult,
 )
 from leedhunter.domain.models import Candidate
 from leedhunter.domain.search.query import Query
 from leedhunter.infrastructure.errors import (
     AuthenticationError,
-    NetworkError,
     ProviderError,
     RateLimitError,
 )
@@ -268,6 +265,7 @@ class BraveSearchProvider(SearchProvider):
     def _generate_query_id(self, query: Query) -> str:
         """Generate a stable ID for a query"""
         import hashlib
+
         content = f"{query.terms}:{query.exact_phrases}:{query.operators}"
         return f"q_{hashlib.md5(content.encode()).hexdigest()[:12]}"
 
@@ -289,7 +287,7 @@ class MockBraveSearchProvider(SearchProvider):
 
     def __init__(
         self,
-        results: Optional[list[dict]] = None,
+        results: list[dict] | None = None,
         available: bool = True,
     ):
         self._results = results or []

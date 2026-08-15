@@ -5,11 +5,10 @@ These tests verify that fixture-driven research finds known candidates and leads
 """
 
 import pytest
-from pathlib import Path
 
-from leedhunter.domain.models import SearchIntent
+from leedhunter.application.orchestrator import ResearchConfig, ResearchOrchestrator
 from leedhunter.application.search.providers.fixture import FixtureSearchProvider
-from leedhunter.application.orchestrator import ResearchOrchestrator, ResearchConfig
+from leedhunter.domain.models import SearchIntent
 
 
 class TestFixtureIntegration:

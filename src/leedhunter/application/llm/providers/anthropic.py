@@ -6,18 +6,16 @@ This module implements the LLM provider interface for Anthropic's Claude API.
 Requires: pip install leedhunter[llm-anthropic]
 """
 
-import asyncio
 from dataclasses import dataclass
-from typing import Any, Optional
+from typing import Any
 
-from leedhunter.application.llm.provider import LLMProvider, LLMResponse, LLMUsage
 from leedhunter.application.llm.errors import (
     LLMAuthenticationError,
+    LLMProviderUnavailableError,
     LLMRateLimitError,
     LLMTimeoutError,
-    LLMProviderUnavailableError,
-    LLMInvalidResponseError,
 )
+from leedhunter.application.llm.provider import LLMProvider, LLMResponse, LLMUsage
 from leedhunter.infrastructure.retry import RetryConfig, retry_async
 
 
@@ -59,6 +57,7 @@ class AnthropicLLMProvider(LLMProvider):
         if self._client is None:
             try:
                 import anthropic
+
                 self._client = anthropic.AsyncAnthropic(
                     api_key=self._config.api_key,
                     timeout=self._config.timeout,
@@ -66,7 +65,7 @@ class AnthropicLLMProvider(LLMProvider):
             except ImportError:
                 raise LLMProviderUnavailableError(
                     "anthropic",
-                    "anthropic package not installed. Install with: pip install leedhunter[llm-anthropic]"
+                    "anthropic package not installed. Install with: pip install leedhunter[llm-anthropic]",
                 )
         return self._client
 
@@ -81,7 +80,7 @@ class AnthropicLLMProvider(LLMProvider):
     async def generate(
         self,
         prompt: str,
-        system_prompt: Optional[str] = None,
+        system_prompt: str | None = None,
         max_tokens: int = 4096,
         temperature: float = 0.7,
     ) -> LLMResponse:
@@ -158,7 +157,7 @@ class AnthropicLLMProvider(LLMProvider):
         self,
         client: Any,
         messages: list[dict],
-        system_prompt: Optional[str],
+        system_prompt: str | None,
         max_tokens: int,
         temperature: float,
     ) -> Any:

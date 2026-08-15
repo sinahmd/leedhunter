@@ -5,7 +5,6 @@ These models represent the database schema and map to domain models.
 """
 
 from datetime import datetime, timezone
-from typing import Optional
 
 from sqlalchemy import (
     Boolean,
@@ -36,11 +35,15 @@ class EntityModel(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     canonical_name: Mapped[str] = mapped_column(String(500), nullable=False)
     canonical_name_normalized: Mapped[str] = mapped_column(String(500), nullable=False, index=True)
-    canonical_domain: Mapped[Optional[str]] = mapped_column(String(200), nullable=True, unique=True)
-    canonical_domain_normalized: Mapped[Optional[str]] = mapped_column(String(200), nullable=True, index=True)
-    metadata_json: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    canonical_domain: Mapped[str | None] = mapped_column(String(200), nullable=True, unique=True)
+    canonical_domain_normalized: Mapped[str | None] = mapped_column(
+        String(200), nullable=True, index=True
+    )
+    metadata_json: Mapped[str | None] = mapped_column(Text, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_utcnow)
-    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_utcnow, onupdate=_utcnow)
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=_utcnow, onupdate=_utcnow
+    )
 
     # Relationships
     identities: Mapped[list["EntityIdentityModel"]] = relationship(
@@ -87,7 +90,9 @@ class EntityIdentityModel(Base):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     entity_id: Mapped[int] = mapped_column(Integer, ForeignKey("entities.id"), nullable=False)
-    identity_type: Mapped[str] = mapped_column(String(50), nullable=False)  # website, instagram, linkedin, phone, email, google_profile
+    identity_type: Mapped[str] = mapped_column(
+        String(50), nullable=False
+    )  # website, instagram, linkedin, phone, email, google_profile
     value: Mapped[str] = mapped_column(String(500), nullable=False)
     value_normalized: Mapped[str] = mapped_column(String(500), nullable=False, index=True)
     normalized_value: Mapped[str] = mapped_column(String(500), nullable=False)
@@ -102,7 +107,9 @@ class EntityIdentityModel(Base):
 
     # Uniqueness constraints
     __table_args__ = (
-        UniqueConstraint("entity_id", "identity_type", "normalized_value", name="uq_entity_identity"),
+        UniqueConstraint(
+            "entity_id", "identity_type", "normalized_value", name="uq_entity_identity"
+        ),
         Index("idx_identity_type_normalized", "identity_type", "normalized_value"),
         Index("idx_identity_entity_id", "entity_id"),
     )
@@ -148,10 +155,12 @@ class SignalModel(Base):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     entity_id: Mapped[int] = mapped_column(Integer, ForeignKey("entities.id"), nullable=False)
-    signal_type: Mapped[str] = mapped_column(String(50), nullable=False)  # expansion, digital_presence, engagement, activity, contactability
+    signal_type: Mapped[str] = mapped_column(
+        String(50), nullable=False
+    )  # expansion, digital_presence, engagement, activity, contactability
     description: Mapped[str] = mapped_column(String(1000), nullable=False)
     description_normalized: Mapped[str] = mapped_column(String(1000), nullable=False, index=True)
-    evidence_ids_json: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    evidence_ids_json: Mapped[str | None] = mapped_column(Text, nullable=True)
     confidence: Mapped[float] = mapped_column(Float, nullable=False)
 
     # Relationships
@@ -176,7 +185,7 @@ class OpportunityModel(Base):
     entity_id: Mapped[int] = mapped_column(Integer, ForeignKey("entities.id"), nullable=False)
     description: Mapped[str] = mapped_column(String(1000), nullable=False)
     description_normalized: Mapped[str] = mapped_column(String(1000), nullable=False, index=True)
-    signal_ids_json: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    signal_ids_json: Mapped[str | None] = mapped_column(Text, nullable=True)
     relevance_score: Mapped[float] = mapped_column(Float, nullable=False)
 
     # Relationships
@@ -198,10 +207,14 @@ class LeadModel(Base):
     __tablename__ = "leads"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
-    entity_id: Mapped[int] = mapped_column(Integer, ForeignKey("entities.id"), nullable=False, unique=True)
+    entity_id: Mapped[int] = mapped_column(
+        Integer, ForeignKey("entities.id"), nullable=False, unique=True
+    )
     score: Mapped[float] = mapped_column(Float, nullable=False, default=0.0)
-    status: Mapped[str] = mapped_column(String(50), nullable=False, default="new")  # new, qualified, disqualified, contacted
-    qualification_reasons_json: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    status: Mapped[str] = mapped_column(
+        String(50), nullable=False, default="new"
+    )  # new, qualified, disqualified, contacted
+    qualification_reasons_json: Mapped[str | None] = mapped_column(Text, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_utcnow)
 
     # Relationships

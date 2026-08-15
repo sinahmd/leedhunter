@@ -14,8 +14,8 @@ Factors:
 """
 
 from leedhunter.application.scoring.engine import (
-    ScoringEngine,
     ScoreBreakdown,
+    ScoringEngine,
 )
 
 __all__ = [

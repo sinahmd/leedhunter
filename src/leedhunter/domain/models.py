@@ -7,7 +7,7 @@ infrastructure concerns.
 
 from datetime import datetime, timezone
 from enum import Enum
-from typing import Optional
+
 from pydantic import BaseModel, Field, field_validator, model_validator
 
 
@@ -20,8 +20,8 @@ class SearchIntent(BaseModel):
     """Represents the user's prospecting objective"""
 
     objective: str = Field(..., min_length=1, max_length=1000)
-    location: Optional[str] = Field(None, max_length=200)
-    industry: Optional[str] = Field(None, max_length=200)
+    location: str | None = Field(None, max_length=200)
+    industry: str | None = Field(None, max_length=200)
     constraints: list[str] = Field(default_factory=list)
 
     @field_validator("objective")
@@ -44,14 +44,14 @@ class Candidate(BaseModel):
 
     source: str = Field(..., min_length=1)
     source_url: str = Field(..., min_length=1)
-    observed_name: Optional[str] = Field(None, max_length=500)
-    observed_domain: Optional[str] = Field(None, max_length=200)
-    observed_username: Optional[str] = Field(None, max_length=200)
-    observed_phone: Optional[str] = Field(None, max_length=50)
-    observed_email: Optional[str] = Field(None, max_length=200)
+    observed_name: str | None = Field(None, max_length=500)
+    observed_domain: str | None = Field(None, max_length=200)
+    observed_username: str | None = Field(None, max_length=200)
+    observed_phone: str | None = Field(None, max_length=50)
+    observed_email: str | None = Field(None, max_length=200)
     metadata: dict[str, str] = Field(default_factory=dict)
     discovered_at: datetime = Field(default_factory=_utcnow)
-    query_id: Optional[str] = None
+    query_id: str | None = None
 
     @field_validator("source_url")
     @classmethod
@@ -63,7 +63,7 @@ class Candidate(BaseModel):
 
     @field_validator("observed_email")
     @classmethod
-    def validate_email(cls, v: Optional[str]) -> Optional[str]:
+    def validate_email(cls, v: str | None) -> str | None:
         """Basic email validation"""
         if v is not None and "@" not in v:
             raise ValueError("Invalid email format")
@@ -71,12 +71,14 @@ class Candidate(BaseModel):
 
     def has_identity(self) -> bool:
         """Check if candidate has any identity information"""
-        return any([
-            self.observed_domain,
-            self.observed_username,
-            self.observed_phone,
-            self.observed_email,
-        ])
+        return any(
+            [
+                self.observed_domain,
+                self.observed_username,
+                self.observed_phone,
+                self.observed_email,
+            ]
+        )
 
 
 class EntityIdentityType(str, Enum):
@@ -115,9 +117,9 @@ class EntityIdentity(BaseModel):
 class Entity(BaseModel):
     """Represents a canonical real-world business entity"""
 
-    id: Optional[str] = None
+    id: str | None = None
     canonical_name: str = Field(..., min_length=1, max_length=500)
-    canonical_domain: Optional[str] = Field(None, max_length=200)
+    canonical_domain: str | None = Field(None, max_length=200)
     identities: list[EntityIdentity] = Field(default_factory=list)
     metadata: dict[str, str] = Field(default_factory=dict)
     created_at: datetime = Field(default_factory=_utcnow)
@@ -130,14 +132,14 @@ class Entity(BaseModel):
             self.updated_at = self.created_at
         return self
 
-    def get_identity(self, identity_type: EntityIdentityType) -> Optional[EntityIdentity]:
+    def get_identity(self, identity_type: EntityIdentityType) -> EntityIdentity | None:
         """Get the first identity of the specified type"""
         for identity in self.identities:
             if identity.type == identity_type:
                 return identity
         return None
 
-    def get_primary_identity(self) -> Optional[EntityIdentity]:
+    def get_primary_identity(self) -> EntityIdentity | None:
         """Get the primary identity"""
         for identity in self.identities:
             if identity.is_primary:
@@ -179,6 +181,7 @@ class Evidence(BaseModel):
     def is_recent(self, days: int = 30) -> bool:
         """Check if evidence is recent (within specified days)"""
         from datetime import timedelta
+
         return (_utcnow() - self.observed_at) <= timedelta(days=days)
 
 

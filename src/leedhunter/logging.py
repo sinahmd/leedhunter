@@ -6,10 +6,8 @@ Provides safe, structured logging without exposing sensitive information.
 
 import logging
 import sys
-from typing import Optional
 
 from leedhunter.config import get_settings
-
 
 # Patterns to redact from logs
 SENSITIVE_PATTERNS = [
@@ -26,7 +24,7 @@ SENSITIVE_PATTERNS = [
 ]
 
 
-def setup_logging(level: Optional[str] = None) -> None:
+def setup_logging(level: str | None = None) -> None:
     """Configure logging for the application with credential redaction"""
 
     if level is None:
@@ -34,9 +32,7 @@ def setup_logging(level: Optional[str] = None) -> None:
 
     # Use SafeFormatter to prevent credential leakage
     handler = logging.StreamHandler(sys.stdout)
-    handler.setFormatter(
-        SafeFormatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
-    )
+    handler.setFormatter(SafeFormatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s"))
 
     logging.basicConfig(
         level=getattr(logging, level),
@@ -82,7 +78,7 @@ class SafeFormatter(logging.Formatter):
         return message
 
 
-def setup_safe_logging(level: Optional[str] = None) -> None:
+def setup_safe_logging(level: str | None = None) -> None:
     """Configure logging with sensitive data redaction"""
 
     if level is None:
@@ -90,9 +86,7 @@ def setup_safe_logging(level: Optional[str] = None) -> None:
 
     # Create handler with safe formatter
     handler = logging.StreamHandler(sys.stdout)
-    handler.setFormatter(
-        SafeFormatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
-    )
+    handler.setFormatter(SafeFormatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s"))
 
     logging.basicConfig(
         level=getattr(logging, level),

@@ -2,11 +2,9 @@
 Tests for scoring engine
 """
 
-import pytest
-
 from leedhunter.application.scoring.engine import (
-    ScoringEngine,
     ScoreBreakdown,
+    ScoringEngine,
 )
 from leedhunter.domain.models import (
     Entity,

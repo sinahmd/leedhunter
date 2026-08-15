@@ -5,20 +5,18 @@ This module implements the search provider interface and registry.
 """
 
 from leedhunter.application.search.provider import (
+    ProviderHealth,
+    ProviderStatus,
     SearchProvider,
     SearchResult,
-    ProviderStatus,
-    ProviderHealth,
 )
-
+from leedhunter.application.search.rate_limiter import (
+    RateLimitConfig,
+    RateLimiter,
+)
 from leedhunter.application.search.registry import (
     ProviderRegistry,
     get_provider_registry,
-)
-
-from leedhunter.application.search.rate_limiter import (
-    RateLimiter,
-    RateLimitConfig,
 )
 
 __all__ = [

@@ -2,16 +2,13 @@
 Tests for database models
 """
 
-import pytest
-from datetime import datetime, timezone
-
 from leedhunter.infrastructure.database.models import (
-    EntityModel,
     EntityIdentityModel,
+    EntityModel,
     EvidenceModel,
-    SignalModel,
-    OpportunityModel,
     LeadModel,
+    OpportunityModel,
+    SignalModel,
 )
 
 

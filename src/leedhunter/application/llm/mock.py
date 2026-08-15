@@ -5,9 +5,6 @@ This provider returns pre-configured responses for testing.
 No real LLM API calls are made.
 """
 
-import json
-from typing import Any, Optional
-
 from leedhunter.application.llm.provider import LLMProvider, LLMResponse, LLMUsage
 
 
@@ -20,7 +17,7 @@ class MockLLMProvider(LLMProvider):
 
     def __init__(
         self,
-        responses: Optional[dict[str, str]] = None,
+        responses: dict[str, str] | None = None,
         default_response: str = '{"result": "mock"}',
     ):
         self._responses = responses or {}
@@ -39,7 +36,7 @@ class MockLLMProvider(LLMProvider):
     async def generate(
         self,
         prompt: str,
-        system_prompt: Optional[str] = None,
+        system_prompt: str | None = None,
         max_tokens: int = 4096,
         temperature: float = 0.7,
     ) -> LLMResponse:

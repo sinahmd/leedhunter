@@ -13,7 +13,7 @@ Every important fact must be traceable with:
 
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
-from typing import Any, Optional
+from typing import Any
 
 from leedhunter.domain.models import Evidence
 
@@ -60,7 +60,7 @@ class EvidenceCollector:
         source: str,
         source_url: str,
         confidence: float = 1.0,
-        metadata: Optional[dict[str, Any]] = None,
+        metadata: dict[str, Any] | None = None,
     ) -> CollectedEvidence:
         """
         Collect evidence
@@ -106,47 +106,55 @@ class EvidenceCollector:
 
         # Collect name evidence
         if candidate.observed_name:
-            evidence_list.append(self.collect(
-                entity_id=entity_id,
-                claim="business_name",
-                value=candidate.observed_name,
-                source=candidate.source,
-                source_url=candidate.source_url,
-                confidence=0.9,
-            ))
+            evidence_list.append(
+                self.collect(
+                    entity_id=entity_id,
+                    claim="business_name",
+                    value=candidate.observed_name,
+                    source=candidate.source,
+                    source_url=candidate.source_url,
+                    confidence=0.9,
+                )
+            )
 
         # Collect domain evidence
         if candidate.observed_domain:
-            evidence_list.append(self.collect(
-                entity_id=entity_id,
-                claim="website_domain",
-                value=candidate.observed_domain,
-                source=candidate.source,
-                source_url=candidate.source_url,
-                confidence=0.95,
-            ))
+            evidence_list.append(
+                self.collect(
+                    entity_id=entity_id,
+                    claim="website_domain",
+                    value=candidate.observed_domain,
+                    source=candidate.source,
+                    source_url=candidate.source_url,
+                    confidence=0.95,
+                )
+            )
 
         # Collect phone evidence
         if candidate.observed_phone:
-            evidence_list.append(self.collect(
-                entity_id=entity_id,
-                claim="phone_number",
-                value=candidate.observed_phone,
-                source=candidate.source,
-                source_url=candidate.source_url,
-                confidence=0.85,
-            ))
+            evidence_list.append(
+                self.collect(
+                    entity_id=entity_id,
+                    claim="phone_number",
+                    value=candidate.observed_phone,
+                    source=candidate.source,
+                    source_url=candidate.source_url,
+                    confidence=0.85,
+                )
+            )
 
         # Collect email evidence
         if candidate.observed_email:
-            evidence_list.append(self.collect(
-                entity_id=entity_id,
-                claim="email_address",
-                value=candidate.observed_email,
-                source=candidate.source,
-                source_url=candidate.source_url,
-                confidence=0.85,
-            ))
+            evidence_list.append(
+                self.collect(
+                    entity_id=entity_id,
+                    claim="email_address",
+                    value=candidate.observed_email,
+                    source=candidate.source,
+                    source_url=candidate.source_url,
+                    confidence=0.85,
+                )
+            )
 
         return evidence_list
 
