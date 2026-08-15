@@ -530,6 +530,10 @@ def export(
         raise typer.Exit(code=0)
 
     # Determine export format
+    if format not in ["json", "csv"]:
+        console.print(f"[red]Invalid format: {format}. Use 'json' or 'csv'[/red]")
+        raise typer.Exit(code=1)
+
     export_format = ExportFormat.JSON if format == "json" else ExportFormat.CSV
 
     # Build status filter

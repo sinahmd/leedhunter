@@ -55,7 +55,7 @@ class TestHelpCommand:
         result = runner.invoke(app, ["--help"])
 
         assert result.exit_code == 0
-        assert "LeedHunter" in result.output
+        assert "AI-powered prospect research engine" in result.output
         assert "prospect research engine" in result.output.lower()
 
     def test_all_commands_listed(self, runner):
@@ -411,8 +411,9 @@ class TestErrorHandling:
             ]
         )
 
-        # Should fail gracefully
-        assert result.exit_code != 0 or "error" in result.output.lower()
+        # Should fail with error message
+        assert result.exit_code == 1
+        assert "Invalid format" in result.output
 
     def test_search_empty_query(self, runner):
         """Test search with empty query"""
