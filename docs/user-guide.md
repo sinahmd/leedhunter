@@ -8,9 +8,14 @@ LeedHunter is an AI-powered prospect research engine that turns a prospecting ob
 
 ### Prerequisites
 
+**Required:**
 - Python 3.10+
-- PostgreSQL 15+
-- Redis 7+
+
+**Optional (for advanced features):**
+- PostgreSQL 15+ (for data persistence)
+- Redis 7+ (for caching - not currently used)
+
+**Note:** LeedHunter works completely in "fixture mode" with no external services required. This is perfect for testing, demos, and development.
 
 ### Install from source
 
@@ -44,8 +49,10 @@ leedhunter doctor
 This checks:
 - Python version
 - Required packages
-- Database connection
-- Redis connection
+- Database connection (optional - will show "Failed" if not configured)
+- Redis connection (optional - will show "Failed" if not configured)
+
+**Note:** Database and Redis connection failures are expected in fixture mode and do not prevent using LeedHunter.
 
 ### 2. Search for Leads
 

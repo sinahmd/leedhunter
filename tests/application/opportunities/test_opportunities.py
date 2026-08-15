@@ -145,7 +145,7 @@ class TestOpportunityEngine:
         opportunity = Opportunity(
             entity_id="entity_1",
             description="Expanding business",
-            signal_ids=[str(id(signal))],
+            signal_ids=[f"sig_{hash(signal.entity_id + signal.signal_type.value + signal.description)}"],
             relevance_score=0.8,
         )
 

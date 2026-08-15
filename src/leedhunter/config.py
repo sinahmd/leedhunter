@@ -109,7 +109,7 @@ class SearchSettings(BaseSettings):
     model_config = SettingsConfigDict(env_prefix="LEEDHUNTER_SEARCH_")
 
     default_provider: str = Field(
-        default="google",
+        default="fixture",
         description="Default search provider",
     )
     max_results_per_query: int = Field(

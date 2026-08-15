@@ -19,7 +19,7 @@
    - Fill in the details
 
 2. **Email** (If configured)
-   - Send to: [SECURITY_EMAIL_PLACEHOLDER]
+   - Send to the repository maintainers via GitHub
    - Include: Description, steps to reproduce, impact
 
 ### What to Include
