@@ -7,7 +7,6 @@ from pydantic import ValidationError
 
 from leedhunter.domain.models import (
     Candidate,
-    Candidate,
     Entity,
     EntityIdentity,
     EntityIdentityType,
@@ -16,7 +15,6 @@ from leedhunter.domain.models import (
     LeadStatus,
     Opportunity,
     SearchIntent,
-    
     SignalType,
 )
 

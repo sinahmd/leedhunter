@@ -92,8 +92,7 @@ def search(
 
     Returns candidates found through the specified search provider.
     """
-    from leedhunter.application.search.providers.fixture import FixtureSearchProvider
-    from leedhunter.domain.search.query import Query, QueryBuilder
+    from leedhunter.domain.search.query import QueryBuilder
 
     console.print(f"\n[bold blue]Searching:[/bold blue] {query}\n")
 

@@ -301,14 +301,13 @@ class ResearchOrchestrator:
 
             # Filter qualified leads
             qualified_leads = [
-                l
-                for lead_item in leads
-                if lead_item.status == LeadStatus.QUALIFIED
-                and lead_item.score >= self._config.min_score
+                lead
+                for lead in leads
+                if lead.status == LeadStatus.QUALIFIED and lead.score >= self._config.min_score
             ]
 
             # Sort by score
-            qualified_leads.sort(key=lambda l: lead_item.score, reverse=True)
+            qualified_leads.sort(key=lambda lead: lead.score, reverse=True)
 
             result.leads = qualified_leads
             result.leads_qualified = len(qualified_leads)
